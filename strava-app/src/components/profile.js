@@ -1,7 +1,7 @@
 import React from 'react'
 
 const ReturnProfile = ({athlete}) => {
-    console.log("this is athlete" + athlete)
+   
     return (
       <div>
         <img className='h-16' src={athlete.profile} alt="profile" />

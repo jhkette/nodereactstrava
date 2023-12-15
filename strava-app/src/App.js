@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Localbase from "localbase";
 // components
 import ReturnProfile from "./components/profile";
 import AthleteRecords from "./components/AthleteRecords";
@@ -10,10 +11,27 @@ function App() {
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
   const [athlete, setAthlete] = useState({});
+  const [activities, setActivities] = useState({});
+  const [latestEntry, setlatestEntry] = useState({});
+  const [test, setTest] = useState({});
   const [totals, setTotals] = useState({});
+  const [imported, setImported] = useState(false)
 
   const baseURL = "http://localhost:3000";
 
+  let db = new Localbase("db");
+
+  useEffect(() => {
+    db.collection("activities")
+      .get()
+      .then((activities) => {
+        if (activities[0]) {
+          setlatestEntry(activities[0][2]["start_date"]);
+          console.log(activities[0][2]["start_date"]);
+          setImported(true);
+        }
+      });
+  });
   useEffect(() => {
     axios
       .get(baseURL + "/auth/link")
@@ -28,6 +46,8 @@ function App() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
+    console.log(config);
+
     if (token) {
       axios
         .get(baseURL + "/user/athlete", config)
@@ -36,6 +56,7 @@ function App() {
           setError(err.message);
         });
     }
+
     if (athlete.id) {
       axios
         .get(baseURL + `/user/${athlete.id}`, config)
@@ -46,12 +67,66 @@ function App() {
     }
   }, [token, athlete.id]);
 
+  useEffect(() => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+    if (athlete.id) {
+      const date = Date.parse(latestEntry).toString();
+
+      axios
+        .get(baseURL + `/user/activities/${date}`, config)
+        .then((res) => setTest(res.data))
+
+        .catch((err) => {
+          setError(err.message);
+        });
+    }
+  }, [athlete.id, token, latestEntry]);
+
+  const importData = async () => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+   const response = await axios(baseURL + `/user/activities`, config)
+   console.log(response.data);
+   setActivities(response.data, "this is all activities")
+
+    addTo();
+  };
+  const addTo = async () => {
+    const finalData = [];
+    for (const element of activities) {
+      finalData.push(...element);
+    }
+    await db.collection("activities").set({
+      ...finalData,
+    });
+    setImported(true)
+  };
+
+  const testData = () => {
+    console.log(test, "this is test");
+  };
   const logout = () => {
     Cookies.remove("token");
-    axios.get(baseURL + "/auth/logout")
+   
+    axios.get(baseURL + "/auth/logout");
     window.location.reload();
   };
-  
+
+  // const getLatest = (after) => {
+  //   const afterFinal = String(Date.parse(after))
+  //   const config = {
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   };
+  //   axios
+  //   .get(baseURL + `/user/activities/${afterFinal}`, config)
+  // }
+
+  // console.log(getLatest("2023-12-10T19:50:54Z"));
 
   return (
     <div className="font-body">
@@ -73,7 +148,7 @@ function App() {
           {token ? (
             <button
               class="bg-sky-500/100 px-6 py-2 rounded-md"
-              onClick={logout }
+              onClick={logout}
             >
               logout
             </button>
@@ -82,6 +157,20 @@ function App() {
               <a href={link}>Authorise</a>
             </button>
           )}
+          {!imported && (
+          <button
+            class="bg-sky-500/100 px-6 py-2 rounded-md"
+            onClick={importData}
+          >
+            import
+          </button>) 
+          }
+          <button
+            class="bg-sky-500/100 px-6 py-2 rounded-md"
+            onClick={testData}
+          >
+            test
+          </button>
         </div>
         <div>
           {totals.all_ride_totals && <AthleteRecords totals={totals} />}
