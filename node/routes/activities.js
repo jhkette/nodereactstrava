@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 
-const getAthlete = async (req, res) => { 
+const getAthlete = async (req, res) => {
   const errors = {};
   const token = req.headers.authorization;
   if (!token) {
@@ -27,15 +27,38 @@ const getAthleteStats = async (req, res) => {
     return res.json(errors);
   }
   try {
-  const response = await axios.get(
-    `https://www.strava.com/api/v3/athletes/${id}/stats`,
-    {
-      headers: { Authorization: token },
-    }
-  );
-  return res.json(response.data);
-  }catch(err){
-    console.log(err)
+    const response = await axios.get(
+      `https://www.strava.com/api/v3/athletes/${id}/stats`,
+      {
+        headers: { Authorization: token },
+      }
+    );
+    return res.json(response.data);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getLatestActivities = async (req, res) => {
+  const errors = {};
+  const after = parseInt(req.params.after / 1000);
+  timestring = after.toString();
+  console.log(req.headers.authorization);
+  const token = req.headers.authorization;
+  if (!token) {
+    errors["error"] = "Permission not granted";
+    return res.send(errors);
+  }
+  try {
+    const response2 = await axios.get(
+      `https://www.strava.com/api/v3/athlete/activities`,
+      { headers: { Authorization: token }, params: { after: timestring } }
+    );
+    console.log(response2.data);
+
+    return res.json(response2.data);
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -47,11 +70,23 @@ const getActivities = async (req, res) => {
     errors["error"] = "Permission not granted";
     return res.json(errors);
   }
-  const response2 = await axios.get(
-    `https://www.strava.com/api/v3/athlete/activities`,
-    { headers: { Authorization: token } }
-  );
-  return res.json(response2.data);
+
+  let page_num = 1;
+  const data_set = [];
+  while (page_num < 3) {
+    const response2 = await axios.get(
+      `https://www.strava.com/api/v3/athlete/activities`,
+      {
+        headers: { Authorization: token },
+        params: { per_page: 30, page: page_num },
+      }
+    );
+
+    data_set.push(response2.data);
+    page_num++;
+  }
+
+  return res.send(data_set);
 };
 
 const getIndividualActivities = async (req, res) => {
@@ -70,6 +105,7 @@ const getIndividualActivities = async (req, res) => {
 
 const router = express.Router();
 
+router.get("/activities/:after", getLatestActivities);
 router.get("/activities", getActivities);
 router.get("/athlete", getAthlete);
 router.get("/:athleteId", getAthleteStats);

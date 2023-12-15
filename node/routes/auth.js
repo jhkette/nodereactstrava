@@ -19,7 +19,7 @@ const authorisation = async (req, res) => {
   }
  
   res.cookie("token", token.access_token);
-  return res.redirect("http://localhost:8080/");
+  return res.redirect(process.env.ORIGIN);
 };
 
 const logout = (req, res) => {
