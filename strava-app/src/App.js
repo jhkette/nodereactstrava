@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Localbase from "localbase";
+import moment from "moment";
 // components
 import ReturnProfile from "./components/profile";
 import AthleteRecords from "./components/AthleteRecords";
@@ -11,27 +12,14 @@ function App() {
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
   const [athlete, setAthlete] = useState({});
-  const [activities, setActivities] = useState({});
-  const [latestEntry, setlatestEntry] = useState({});
+
+  const [latestEntry, setlatestEntry] = useState(null);
   const [test, setTest] = useState({});
-  const [totals, setTotals] = useState({});
-  const [imported, setImported] = useState(false)
 
   const baseURL = "http://localhost:3000";
 
-  let db = new Localbase("db");
+  let db = useMemo(() => new Localbase("db"), []);
 
-  useEffect(() => {
-    db.collection("activities")
-      .get()
-      .then((activities) => {
-        if (activities[0]) {
-          setlatestEntry(activities[0][2]["start_date"]);
-          console.log(activities[0][2]["start_date"]);
-          setImported(true);
-        }
-      });
-  });
   useEffect(() => {
     axios
       .get(baseURL + "/auth/link")
@@ -56,77 +44,94 @@ function App() {
           setError(err.message);
         });
     }
-
-    if (athlete.id) {
-      axios
-        .get(baseURL + `/user/${athlete.id}`, config)
-        .then((res) => setTotals(res.data))
-        .catch((err) => {
-          setError(err.message);
-        });
-    }
   }, [token, athlete.id]);
+
+  //   const max = data.reduce(function(prev, current) {
+  //     return (prev && prev.y > current.y) ? prev : current
+  // })
+
+  // const max = data.reduce((prev, current) => (prev && prev.y > current.y) ? prev : current)
+  useEffect(() => {
+    try {
+      db.collection("activities")
+        .get()
+        .then((activities) => {
+          if (activities) {
+            setlatestEntry(
+              Date.parse(activities[activities.length - 1]["start_date"]) / 1000
+            );
+            console.log(activities[activities.length - 1]);
+            console.log("checking for latest entry");
+          }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  }, [db]);
 
   useEffect(() => {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
 
-    if (athlete.id) {
-      const date = Date.parse(latestEntry).toString();
+    console.log("hello");
+    const addLatest = (finalData) => {
+      for (const element of finalData) {
+        db.collection("activities").add(element);
+      }
+    };
 
+    console.log(token, moment(latestEntry).isValid(), latestEntry);
+
+    console.log(latestEntry, "this should be fetching");
+    if (moment(latestEntry).isValid()) {
       axios
-        .get(baseURL + `/user/activities/${date}`, config)
-        .then((res) => setTest(res.data))
-
-        .catch((err) => {
-          setError(err.message);
-        });
+        .get(baseURL + `/user/latestactivities/${latestEntry}`, config)
+        .then((res) => addLatest(res.data))
+        .then(() =>
+          console.log(
+            baseURL + `/user/latestactivities/${latestEntry}`,
+            "this url ran"
+          )
+        );
     }
-  }, [athlete.id, token, latestEntry]);
+  }, [token, latestEntry, db]);
 
   const importData = async () => {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
 
-   const response = await axios(baseURL + `/user/activities`, config)
-   console.log(response.data);
-   setActivities(response.data, "this is all activities")
-
-    addTo();
-  };
-  const addTo = async () => {
+    const response = await axios(baseURL + `/user/activities`, config);
+    console.log(response);
     const finalData = [];
-    for (const element of activities) {
-      finalData.push(...element);
+    for (let i = 0; i < response.data.length; i++) {
+      finalData.push(response.data[i]);
     }
-    await db.collection("activities").set({
-      ...finalData,
-    });
-    setImported(true)
+    console.log("import data ran");
+    const reversed = finalData.reverse();
+    for (const element of reversed) {
+      db.collection("activities").add(element);
+    }
+    Cookies.set("imported", true);
   };
+  // const addTo = async () => {
+
+  // };
 
   const testData = () => {
-    console.log(test, "this is test");
+    db.collection("activities")
+      .get()
+      .then((activities) => {
+        console.log("users: ", activities);
+      });
   };
   const logout = () => {
     Cookies.remove("token");
-   
+    Cookies.remove("imported");
     axios.get(baseURL + "/auth/logout");
     window.location.reload();
   };
-
-  // const getLatest = (after) => {
-  //   const afterFinal = String(Date.parse(after))
-  //   const config = {
-  //     headers: { Authorization: `Bearer ${token}` },
-  //   };
-  //   axios
-  //   .get(baseURL + `/user/activities/${afterFinal}`, config)
-  // }
-
-  // console.log(getLatest("2023-12-10T19:50:54Z"));
 
   return (
     <div className="font-body">
@@ -157,23 +162,24 @@ function App() {
               <a href={link}>Authorise</a>
             </button>
           )}
-          {!imported && (
-          <button
-            class="bg-sky-500/100 px-6 py-2 rounded-md"
-            onClick={importData}
-          >
-            import
-          </button>) 
-          }
+
+          {Cookies.get("imported") ? (
+            ""
+          ) : (
+            <button
+              class="bg-sky-500/100 px-6 py-2 rounded-md"
+              onClick={importData}
+            >
+              import
+            </button>
+          )}
+
           <button
             class="bg-sky-500/100 px-6 py-2 rounded-md"
             onClick={testData}
           >
             test
           </button>
-        </div>
-        <div>
-          {totals.all_ride_totals && <AthleteRecords totals={totals} />}
         </div>
       </main>
     </div>

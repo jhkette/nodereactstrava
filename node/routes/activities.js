@@ -41,8 +41,9 @@ const getAthleteStats = async (req, res) => {
 
 const getLatestActivities = async (req, res) => {
   const errors = {};
-  const after = parseInt(req.params.after / 1000);
-  timestring = after.toString();
+  const after = req.params.after;
+  
+
   console.log(req.headers.authorization);
   const token = req.headers.authorization;
   if (!token) {
@@ -52,9 +53,9 @@ const getLatestActivities = async (req, res) => {
   try {
     const response2 = await axios.get(
       `https://www.strava.com/api/v3/athlete/activities`,
-      { headers: { Authorization: token }, params: { after: timestring } }
+      { headers: { Authorization: token }, params: { after: after } }
     );
-    console.log(response2.data);
+    // console.log(response2.data);
 
     return res.json(response2.data);
   } catch (err) {
@@ -78,14 +79,13 @@ const getActivities = async (req, res) => {
       `https://www.strava.com/api/v3/athlete/activities`,
       {
         headers: { Authorization: token },
-        params: { per_page: 30, page: page_num },
+        params: { per_page: 200, page: page_num },
       }
     );
 
-    data_set.push(response2.data);
+    data_set.push(...response2.data);
     page_num++;
   }
-
   return res.send(data_set);
 };
 
@@ -105,7 +105,7 @@ const getIndividualActivities = async (req, res) => {
 
 const router = express.Router();
 
-router.get("/activities/:after", getLatestActivities);
+router.get("/latestactivities/:after", getLatestActivities);
 router.get("/activities", getActivities);
 router.get("/athlete", getAthlete);
 router.get("/:athleteId", getAthleteStats);
