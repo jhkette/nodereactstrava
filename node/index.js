@@ -3,6 +3,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const dotenv = require('dotenv').config()
+const mongoose = require('mongoose')
+const session = require('express-session')
 
 const authRoutes = require("./routes/auth")
 const activityRoutes = require("./routes/activities")
@@ -24,6 +26,18 @@ app.use(
       // optionsSuccessStatus: 200, // 
   })
 );
+
+const oneDay = 1000 * 60 * 60 * 24;
+// app.use(session({
+//     secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+//     saveUninitialized:true,
+//     cookie: { maxAge: oneDay },
+//     resave: false 
+// }));
+
+// call mongoose to connect to mongodb database
+mongoose.connect(process.env.DB_CONNECTOR)
+.then(() => console.log('Connected Successfully'))
 
 app.use(cookieParser());
 
