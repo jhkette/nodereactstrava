@@ -3,9 +3,11 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Localbase from "localbase";
 import moment from "moment";
+
 // components
 import ReturnProfile from "./components/profile";
 import AthleteRecords from "./components/AthleteRecords";
+
 
 function App() {
   const [link, setLink] = useState();
@@ -56,7 +58,7 @@ function App() {
       db.collection("activities")
         .get()
         .then((activities) => {
-          if (activities) {
+          if (activities.length) {
             setlatestEntry(
               Date.parse(activities[activities.length - 1]["start_date"]) / 1000
             );

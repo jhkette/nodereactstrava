@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const userActivities = require("../models/activities")
 
 const getAthlete = async (req, res) => {
   const errors = {};
@@ -12,6 +13,8 @@ const getAthlete = async (req, res) => {
     const response = await axios.get(`https://www.strava.com/api/v3/athlete`, {
       headers: { Authorization: token },
     });
+
+
     return res.json(response.data);
   } catch (err) {
     console.log(err);
@@ -55,8 +58,8 @@ const getLatestActivities = async (req, res) => {
       `https://www.strava.com/api/v3/athlete/activities`,
       { headers: { Authorization: token }, params: { after: after } }
     );
-    // console.log(response2.data);
-
+   
+ 
     return res.json(response2.data);
   } catch (err) {
     console.log(err);
@@ -86,6 +89,11 @@ const getActivities = async (req, res) => {
     data_set.push(...response2.data);
     page_num++;
   }
+  const {id} = data_set[0];
+  // const useracts = userActivities.find({ id: id})
+
+  // await useracts.updateOne({$push: {activities:{$each: data_set}}})
+  console.log(id)
   return res.send(data_set);
 };
 
