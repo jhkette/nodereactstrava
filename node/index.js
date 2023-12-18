@@ -27,13 +27,7 @@ app.use(
   })
 );
 
-const oneDay = 1000 * 60 * 60 * 24;
-// app.use(session({
-//     secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
-//     saveUninitialized:true,
-//     cookie: { maxAge: oneDay },
-//     resave: false 
-// }));
+
 
 // call mongoose to connect to mongodb database
 mongoose.connect(process.env.DB_CONNECTOR)

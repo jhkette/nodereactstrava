@@ -14,12 +14,10 @@ function App() {
   const [token, setToken] = useState("");
   const [athlete, setAthlete] = useState({});
   const [userActivities, setUseractivities] = useState({});
-  const [latestEntry, setlatestEntry] = useState(null);
-  const [test, setTest] = useState({});
+
+
 
   const baseURL = "http://localhost:3000";
-
-  let db = useMemo(() => new Localbase("db"), []);
 
   useEffect(() => {
     axios
@@ -37,44 +35,17 @@ function App() {
     };
     console.log(config);
 
-    if (token) {
-      axios
-        .get(baseURL + "/user/athlete", config)
-        .then((res) => setAthlete(res.data))
-        .catch((err) => {
-          setError(err.message);
-        });
-    }
-  }, [token, athlete.id]);
-
-  //   const max = data.reduce(function(prev, current) {
-  //     return (prev && prev.y > current.y) ? prev : current
-  // })
-
-  // const max = data.reduce((prev, current) => (prev && prev.y > current.y) ? prev : current)
-  useEffect(() => {
-    const finalActivity = userActivities.activities[userActivities.activities.length -1]
-    setlatestEntry(finalActivity["start_date"])
-  }, [userActivities.activities]);
-
-  useEffect(() => {
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
+    const getData = async () => {
+      const userData = await axios.get(baseURL + "/user/athlete", config);
+      console.log(userData);
+      setAthlete(userData.data.profile);
+      setUseractivities(userData.data.user);
     };
 
-
-    console.log(latestEntry, "this should be fetching");
-    if (moment(latestEntry).isValid()) {
-      axios
-        .get(baseURL + `/user/latestactivities/${latestEntry}`, config)
-        // .then((res) => addLatest(res.data))
-        .then(() =>
-          console.log(
-            baseURL + `/user/latestactivities/${latestEntry}`,
-          )
-        );
+    if (token) {
+      getData();
     }
-  }, [token, latestEntry]);
+  }, [token]);
 
   const importData = async () => {
     const config = {
@@ -82,6 +53,7 @@ function App() {
     };
 
     const response = await axios(baseURL + `/user/activities/import`, config);
+    console.log(response.data, "msadmskald");
     setUseractivities(response.data);
 
     Cookies.set("imported", true);
@@ -91,11 +63,10 @@ function App() {
   // };
 
   const testData = () => {
-    db.collection("activities")
-      .get()
-      .then((activities) => {
-        console.log("users: ", activities);
-      });
+    console.log(athlete);
+ 
+    console.log(userActivities);
+  
   };
   const logout = () => {
     Cookies.remove("token");
