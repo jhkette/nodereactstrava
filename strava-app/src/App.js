@@ -8,13 +8,12 @@ import moment from "moment";
 import ReturnProfile from "./components/profile";
 import AthleteRecords from "./components/AthleteRecords";
 
-
 function App() {
   const [link, setLink] = useState();
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
   const [athlete, setAthlete] = useState({});
-
+  const [userActivities, setUseractivities] = useState({});
   const [latestEntry, setlatestEntry] = useState(null);
   const [test, setTest] = useState({});
 
@@ -54,67 +53,37 @@ function App() {
 
   // const max = data.reduce((prev, current) => (prev && prev.y > current.y) ? prev : current)
   useEffect(() => {
-    try {
-      db.collection("activities")
-        .get()
-        .then((activities) => {
-          if (activities.length) {
-            setlatestEntry(
-              Date.parse(activities[activities.length - 1]["start_date"]) / 1000
-            );
-            console.log(activities[activities.length - 1]);
-            console.log("checking for latest entry");
-          }
-        });
-    } catch (err) {
-      console.log(err);
-    }
-  }, [db]);
+    const finalActivity = userActivities.activities[userActivities.activities.length -1]
+    setlatestEntry(finalActivity["start_date"])
+  }, [userActivities.activities]);
 
   useEffect(() => {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
 
-    console.log("hello");
-    const addLatest = (finalData) => {
-      for (const element of finalData) {
-        db.collection("activities").add(element);
-      }
-    };
-
-    console.log(token, moment(latestEntry).isValid(), latestEntry);
 
     console.log(latestEntry, "this should be fetching");
     if (moment(latestEntry).isValid()) {
       axios
         .get(baseURL + `/user/latestactivities/${latestEntry}`, config)
-        .then((res) => addLatest(res.data))
+        // .then((res) => addLatest(res.data))
         .then(() =>
           console.log(
             baseURL + `/user/latestactivities/${latestEntry}`,
-            "this url ran"
           )
         );
     }
-  }, [token, latestEntry, db]);
+  }, [token, latestEntry]);
 
   const importData = async () => {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
 
-    const response = await axios(baseURL + `/user/activities`, config);
-    console.log(response);
-    const finalData = [];
-    for (let i = 0; i < response.data.length; i++) {
-      finalData.push(response.data[i]);
-    }
-    console.log("import data ran");
-    const reversed = finalData.reverse();
-    for (const element of reversed) {
-      db.collection("activities").add(element);
-    }
+    const response = await axios(baseURL + `/user/activities/import`, config);
+    setUseractivities(response.data);
+
     Cookies.set("imported", true);
   };
   // const addTo = async () => {
