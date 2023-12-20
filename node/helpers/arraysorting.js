@@ -49,4 +49,4 @@ function heapSort(arr) {
 
 
 
-  modules.export = find_averages_of_subarrays
+  modules.exports = {find_averages_of_subarrays, heapify, heapSort}

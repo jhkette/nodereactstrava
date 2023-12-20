@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const dotenv = require('dotenv').config()
 const mongoose = require('mongoose')
-const session = require('express-session')
+
 
 const authRoutes = require("./routes/auth")
 const activityRoutes = require("./routes/activities")

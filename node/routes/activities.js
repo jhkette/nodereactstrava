@@ -13,9 +13,6 @@ const getAthlete = async (req, res) => {
     const response = await axios.get(`https://www.strava.com/api/v3/athlete`, {
       headers: { Authorization: token },
     });
-    // const user = new userActivities({
-    //   id: response.data.id
-    //  })
 
     const foundUserActs = await UserActivities.findOne({
       athlete_id: response.data.id,
@@ -68,20 +65,49 @@ const getLatestActivities = async (req, res) => {
     return res.send(errors);
   }
   try {
-    // let page_num = 1;
-    // const data_set = [];
-
     const response2 = await axios.get(
       `https://www.strava.com/api/v3/athlete/activities`,
-      { headers: { Authorization: token }, params: { after: after } }
-    );
-    // const foundUserActs = await UserActivities.findOne({ athlete_id: req.params.id})
-    const allUserData = await UserActivities.updateOne(
-      { athlete_id: id },
-      { $push: { activities: { $each: response2.data } } }
+      {
+        headers: { Authorization: token },
+        params: { after: after, per_page: 100 },
+      }
     );
 
-    return res.json(allUserData);
+    if (!response2.data.athlete){
+      errors["error"] = "no activities found";
+      return res.send(errors)
+    }
+    const data_set = [...response2.data];
+    for (element of data_set) {
+      if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
+        const watts = await axios.get(
+          // https://communityhub.strava.com/t5/developer-discussions/strava-api-keys-and-streams/m-p/5393
+          `https://www.strava.com/api/v3/activities/${element.id}/streams/watts?series_type=time&resolution=medium`,
+          { headers: { Authorization: `${token}` } }
+        );
+        if (watts.data.length >= 2) {
+          element["watt_stream"] = watts.data;
+        }
+      }
+      if (element["type"] == "Run") {
+        const run = await axios.get(
+          `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=medium`,
+          { headers: { Authorization: `${token}` } }
+        );
+        element["run_stream"] = run.data;
+      }
+    }
+
+    //  console.log("data set for latest", data_set)
+    const { id } = data_set[0].athlete;
+    
+    // const foundUserActs = await UserActivities.findOne({ athlete_id: req.params.id})
+    await UserActivities.updateOne(
+      { athlete_id: id },
+      { $push: { activities: { $each: data_set } } }
+    );
+    
+    return res.json(data_set);
   } catch (err) {
     console.log(err);
   }
@@ -138,43 +164,15 @@ const importActivities = async (req, res) => {
       return res.send((errors["error"] = "already imported"));
     }
   }
-  const allUserData = await UserActivities.updateOne(
+   // the data needs to be reversed - because otherwise the latest activity is first
+  data_set.reverse()
+  const allUserData = await UserActivities.findOneAndUpdate(
     { athlete_id: id },
-    { $push: { activities: { $each: data_set } } }
-  );
+    { $push: { activities: { $each: data_set } } },
+  {new: true});
   console.log(id);
   return res.send(allUserData);
 };
-
-// const getAllActivities = async (req,res) => {
-//   const errors = {};
-//   console.log(req.headers.authorization);
-//   const token = req.headers.authorization;
-//   if (!token) {
-//     errors["error"] = "Permission not granted";
-//     return res.json(errors);
-//   }
-
-//   const response = await axios.get(`https://www.strava.com/api/v3/athlete`, {
-//       headers: { Authorization: token },
-//     });
-//   const finalid = parseInt(req.params.actid)
-//   console.log(finalid, response.data.id)
-//   if(finalid === response.data.id){
-//     console.log('hello it is the same')
-//   }
-
-//   const foundUserActs = await UserActivities.findOne({
-//     athlete_id: response.data.id,
-//   });
-//   // console.log(typeof(id), "getallactivities")
-//   // const foundUserActs = await UserActivities.findById(id).exec();
-//   // console.log(foundUserActs)
-//   // if (!foundUserActs) {
-//   //   return res.send((errors["error"] = "user not found"));
-//   // }
-//   return res.send(foundUserActs);
-// };
 
 const getIndividualActivities = async (req, res) => {
   const errors = {};

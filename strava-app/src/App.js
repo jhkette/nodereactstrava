@@ -13,9 +13,8 @@ function App() {
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
   const [athlete, setAthlete] = useState({});
-  const [userActivities, setUseractivities] = useState({});
-
-
+  const [latest, setLatest] = useState(null);
+  const [userActivities, setUseractivities] = useState([]);
 
   const baseURL = "http://localhost:3000";
 
@@ -36,16 +35,55 @@ function App() {
     console.log(config);
 
     const getData = async () => {
+      try{
       const userData = await axios.get(baseURL + "/user/athlete", config);
+      if(userData.data.errors){
+        console.log(userData.data)
+        return;
+      }
       console.log(userData);
       setAthlete(userData.data.profile);
-      setUseractivities(userData.data.user);
+      setUseractivities(userData.data.user.activities);
+      setLatest(userData.data.user.activities[0]["start_date"]);
+      }catch(error){
+        console.log(error)
+      }
+      
     };
-
     if (token) {
       getData();
     }
   }, [token]);
+
+  useEffect(() => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const getLatestData = async () => {
+      console.log("the get latest function ran");
+      try {
+        const date = Date.parse(latest) / 1000;
+        const activities = await axios.get(
+          baseURL + `/user/activities/${date}`,
+          config
+        );
+        //  setUseractivities()
+        if (activities.data.error) {
+          console.log(activities.data.error);
+          return;
+        } else {
+          console.log(activities.data)
+          setUseractivities((oldArray) => [...activities.data, ...oldArray]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    console.log("the latest use effect ran", latest);
+    if (token && latest !== null) {
+      getLatestData();
+    }
+  }, [token, latest]);
 
   const importData = async () => {
     const config = {
@@ -58,16 +96,8 @@ function App() {
 
     Cookies.set("imported", true);
   };
-  // const addTo = async () => {
 
-  // };
 
-  const testData = () => {
-    console.log(athlete);
- 
-    console.log(userActivities);
-  
-  };
   const logout = () => {
     Cookies.remove("token");
     Cookies.remove("imported");
@@ -116,12 +146,7 @@ function App() {
             </button>
           )}
 
-          <button
-            class="bg-sky-500/100 px-6 py-2 rounded-md"
-            onClick={testData}
-          >
-            test
-          </button>
+
         </div>
       </main>
     </div>
