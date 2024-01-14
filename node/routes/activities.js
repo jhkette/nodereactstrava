@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const UserActivities = require("../models/UserActivities");
+const {quickSort, findAverage} = require("../helpers/arraysorting")
 
 const getAthlete = async (req, res) => {
   const errors = {};
@@ -56,7 +57,8 @@ const getAthleteStats = async (req, res) => {
 
 const getLatestActivities = async (req, res) => {
   const errors = {};
-  const after = req.params.after;
+  const after = parseInt(req.params.after);
+  console.log("after", after)
 
   console.log(req.headers.authorization);
   const token = req.headers.authorization;
@@ -69,45 +71,53 @@ const getLatestActivities = async (req, res) => {
       `https://www.strava.com/api/v3/athlete/activities`,
       {
         headers: { Authorization: token },
-        params: { after: after, per_page: 100 },
+        params: { "after": after},
       }
     );
-
-    if (!response2.data.athlete){
-      errors["error"] = "no activities found";
+    console.log(response2.data)
+    if(response2.data.length == 0){
+        errors["error"] = "no activities found";
       return res.send(errors)
+
     }
-    const data_set = [...response2.data];
-    for (element of data_set) {
-      if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
-        const watts = await axios.get(
-          // https://communityhub.strava.com/t5/developer-discussions/strava-api-keys-and-streams/m-p/5393
-          `https://www.strava.com/api/v3/activities/${element.id}/streams/watts?series_type=time&resolution=medium`,
-          { headers: { Authorization: `${token}` } }
-        );
-        if (watts.data.length >= 2) {
-          element["watt_stream"] = watts.data;
-        }
-      }
-      if (element["type"] == "Run") {
-        const run = await axios.get(
-          `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=medium`,
-          { headers: { Authorization: `${token}` } }
-        );
-        element["run_stream"] = run.data;
-      }
-    }
+    //**!!!!!!!!You NEED TO CHECK IF DATE THING RETURNS ANYTHING -CHECK LENGTH OF RESPONSE.DATA!!!!!!*/
+
+    // if (!response2.data.athlete){
+    
+    // }
+    // const data_set = [...response2.data];
+    // for (element of data_set) {
+    //   if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
+    //     const watts = await axios.get(
+    //       // https://communityhub.strava.com/t5/developer-discussions/strava-api-keys-and-streams/m-p/5393
+    //       `https://www.strava.com/api/v3/activities/${element.id}/streams/watts?series_type=time&resolution=medium`,
+    //       { headers: { Authorization: `${token}` } }
+    //     );
+    //     if (watts.data.length >= 2) {
+    //       element["watt_stream"] = watts.data;
+    //       // const sorted = quickSort(findAverage(element["watt_stream"][0].data))
+    //       // console.log(sorted)
+    //     }
+    //   }
+    //   if (element["type"] == "Run") {
+    //     const run = await axios.get(
+    //       `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=medium`,
+    //       { headers: { Authorization: `${token}` } }
+    //     );
+    //     element["run_stream"] = run.data;
+    //   }
+    // }
 
     //  console.log("data set for latest", data_set)
-    const { id } = data_set[0].athlete;
+    // const { id } = data_set[0].athlete;
     
     // const foundUserActs = await UserActivities.findOne({ athlete_id: req.params.id})
-    await UserActivities.updateOne(
-      { athlete_id: id },
-      { $push: { activities: { $each: data_set } } }
-    );
-    
-    return res.json(data_set);
+    // await UserActivities.updateOne(
+    //   { athlete_id: id },
+    //   { $push: { activities: { $each: data_set } } }
+    // );
+    return
+    // return res.json(data_set);
   } catch (err) {
     console.log(err);
   }
@@ -121,7 +131,8 @@ const importActivities = async (req, res) => {
     errors["error"] = "Permission not granted";
     return res.json(errors);
   }
-
+  // CHECK IF DATA EXISTS !!!!////
+  
   let page_num = 1;
   const data_set = [];
   while (page_num < 3) {
@@ -147,6 +158,10 @@ const importActivities = async (req, res) => {
       );
       if (watts.data.length >= 2) {
         element["watt_stream"] = watts.data;
+        // const sorted = quickSort(findAverage(element["watt_stream"][0].data))
+        // element["watt_stream"].push(sorted)
+       
+
       }
     }
     if (element["type"] == "Run") {
