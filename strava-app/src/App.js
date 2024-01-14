@@ -17,7 +17,9 @@ function App() {
   const [userActivities, setUseractivities] = useState([]);
 
   const baseURL = "http://localhost:3000";
-
+  /**
+   * Get athlete use effect hook
+  */
   useEffect(() => {
     axios
       .get(baseURL + "/auth/link")
@@ -44,7 +46,7 @@ function App() {
       console.log(userData);
       setAthlete(userData.data.profile);
       setUseractivities(userData.data.user.activities);
-      setLatest(userData.data.user.activities[0]["start_date"]);
+      setLatest(userData.data.user.activities[userData.data.user.activities.length-1]["start_date"]);
       }catch(error){
         console.log(error)
       }
@@ -62,25 +64,32 @@ function App() {
     const getLatestData = async () => {
       console.log("the get latest function ran");
       try {
-        const date = Date.parse(latest) / 1000;
+        if(latest){        
+          console.log("THIS IS THE LATEST THAT IS IMPORTANT!!!", latest)
+        const date = Math.floor(Date.parse(latest)/1000);
+        console.log(date, "this is the date")
         const activities = await axios.get(
           baseURL + `/user/activities/${date}`,
           config
         );
-        //  setUseractivities()
-        if (activities.data.error) {
-          console.log(activities.data.error);
-          return;
-        } else {
-          console.log(activities.data)
-          setUseractivities((oldArray) => [...activities.data, ...oldArray]);
-        }
+
+        console.log(activities, "THIS IS THE ACTIVITIES THAT ARE FROM THE DATE")
+        
+        // //  setUseractivities()
+        // if (activities.data.error) {
+        //   console.log(activities.data.error);
+        //   return;
+        // } else {
+        //   console.log(activities.data)
+        //   setUseractivities((oldArray) => [...activities.data, ...oldArray]);
+        // }
+      }
       } catch (error) {
         console.log(error);
       }
     };
     console.log("the latest use effect ran", latest);
-    if (token && latest !== null) {
+    if (token && latest) {
       getLatestData();
     }
   }, [token, latest]);
