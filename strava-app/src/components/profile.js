@@ -4,10 +4,10 @@ const ReturnProfile = ({athlete}) => {
    
     return (
       <div>
-        <img className='h-16' src={athlete.profile} alt="profile" />
-        <p className="py-4">
+       {athlete.profile && <img className='h-16' src={athlete.profile} alt="profile" /> }
+       {athlete &&  <p className="py-4">
           You are logged in as {athlete.firstname} {athlete.lastname}
-        </p>
+        </p> }
       </div>
     );
   };
