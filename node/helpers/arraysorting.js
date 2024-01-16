@@ -1,6 +1,9 @@
 // https://sunjetliu.medium.com/algorithm-practice-find-averages-of-subarrays-db9108c0d55e
 
 function findAverage(K, arr) {
+    if (K > arr.length){
+      return null
+    }
     const result = [];
     let windowSum = 0.0,
         windowStart = 0;
@@ -40,4 +43,8 @@ function findAverage(K, arr) {
     return [...quickSort(leftItems), pivot, ...quickSort(rightItems)]
   }
 
-  module.exports = {findAverage, quickSort}
+  function returnLargest(arr){
+    return arr[arr.length -1]
+  }
+
+  module.exports = {findAverage, quickSort, returnLargest}
