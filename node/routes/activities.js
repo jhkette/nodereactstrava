@@ -149,7 +149,7 @@ const importActivities = async (req, res) => {
   }
   // CHECK IF DATA EXISTS !!!!////
 
- // First I am checking if there is data for activities in mongodb
+  // First I am checking if there is data for activities in mongodb
   const foundUserActs = await UserActivities.findOne({ athlete_id: userId });
   if (foundUserActs) {
     if (foundUserActs.activities.length > 5) {
@@ -167,11 +167,10 @@ const importActivities = async (req, res) => {
         params: { per_page: 20, page: page_num },
       }
     );
-
     data_set.push(...response2.data);
     page_num++;
   }
-  const nums = [15, 30, 60, 120, 180, 300, 480, 600, 900, 1200];
+  const nums = [15, 30, 60,90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 410, 440, 480, 600, 900, 1200];
   for (element of data_set) {
     // element["test"] ="this is just a test"
     if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
@@ -182,16 +181,15 @@ const importActivities = async (req, res) => {
       );
       if (watts.data.length >= 2) {
         element["watt_stream"] = watts.data;
-         const pbs = {}
+        const pbs = {};
         for (num of nums) {
           const averages = findAverage(num, element["watt_stream"][0].data);
           if (averages) {
             const sorted = quickSort(averages);
-
             pbs[num] = Math.round(sorted[sorted.length - 1]);
           }
         }
-        element["pbs"] = pbs
+        element["pbs"] = pbs;
       }
     }
     if (element["type"] == "Run") {
@@ -200,19 +198,52 @@ const importActivities = async (req, res) => {
         { headers: { Authorization: `${token}` } }
       );
       element["run_stream"] = run.data;
+      const runpbs = {};
+      for (num of nums) {
+        const averages = findAverage(
+          num,
+          element["run_stream"]["velocity_smooth"].data
+        );
+        if (averages) {
+          const sorted = quickSort(averages);
+
+          runpbs[num] = 26.8224 / sorted[sorted.length - 1];
+        }
+      }
+      element["runpbs"] = runpbs;
     }
   }
 
+  const allTime = {};
+
+  const filteredActivities = data_set.filter((element) =>
+    element.hasOwnProperty("pbs")
+  );
+
+  // https://stackoverflow.com/questions/63971208/how-to-filter-array-of-objects-where-object-has-property-tagid-or-keywordid-in-j
+
+  for (num of nums) {
+    let max = filteredActivities.reduce(
+      (acc, value) =>
+        acc > value["pbs"][num.toString()] ? acc : value["pbs"][num.toString()],
+      0
+    );
+    console.log(max);
+    allTime[num] = max;
+  }
+  console.log(allTime, "THIS IS ALL TIME");
+
+  // const { id } = data_set[0].athlete;
   /**  the data needs to be reversed - because otherwise the latest activity is first - 
   activities need to be arranged
    * first to last **/
   data_set.reverse();
   const allUserData = await UserActivities.findOneAndUpdate(
-    { athlete_id: id },
+    { athlete_id: userId },
     { $push: { activities: { $each: data_set } } },
     { new: true }
   );
-  console.log(id);
+  console.log(userId);
   return res.send(allUserData);
 };
 
