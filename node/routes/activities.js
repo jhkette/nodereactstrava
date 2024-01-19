@@ -1,11 +1,10 @@
 const express = require("express");
 const axios = require("axios");
 const UserActivities = require("../models/UserActivities");
-const {
-  quickSort,
-  findAverage,
-  returnLargest,
-} = require("../helpers/arraysorting");
+const { quickSort, findAverage } = require("../helpers/arraysorting");
+const { runDistance, getShortestSubarray } = require("../helpers/runSorting");
+
+const { sleep } = require("../helpers/sleep");
 
 const getAthlete = async (req, res) => {
   const errors = {};
@@ -37,28 +36,6 @@ const getAthlete = async (req, res) => {
   }
 };
 
-const getAthleteStats = async (req, res) => {
-  const errors = {};
-  const token = req.headers.authorization;
-  const id = req.params.athleteId;
-  if (!token) {
-    errors["error"] = "Permission not granted";
-    return res.json(errors);
-  }
-  try {
-    const response = await axios.get(
-      `https://www.strava.com/api/v3/athletes/${id}/stats`,
-      {
-        headers: { Authorization: token },
-      }
-    );
-
-    return res.json(response.data);
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 const getLatestActivities = async (req, res) => {
   // we need t
   const errors = {};
@@ -79,6 +56,10 @@ const getLatestActivities = async (req, res) => {
         params: { after: after },
       }
     );
+    console.log(response2);
+    if (response2.status === 429) {
+      await sleep();
+    }
     // console.log(response2.data)
     if (response2.data.length == 0) {
       errors["error"] = "no activities found";
@@ -110,6 +91,9 @@ const getLatestActivities = async (req, res) => {
           `https://www.strava.com/api/v3/activities/${element.id}/streams/watts?series_type=time&resolution=medium`,
           { headers: { Authorization: `${token}` } }
         );
+        if (watts.status == 429) {
+          await sleep();
+        }
         if (watts.data.length >= 2) {
           element["watt_stream"] = watts.data;
           // const sorted = quickSort(findAverage(element["watt_stream"][0].data))
@@ -121,6 +105,9 @@ const getLatestActivities = async (req, res) => {
           `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=medium`,
           { headers: { Authorization: `${token}` } }
         );
+        if (run.status == 429) {
+          await sleep();
+        }
         element["run_stream"] = run.data;
       }
     }
@@ -167,23 +154,37 @@ const importActivities = async (req, res) => {
         params: { per_page: 20, page: page_num },
       }
     );
+    if (response2.status == 429) {
+      await sleep();
+    }
     data_set.push(...response2.data);
     page_num++;
   }
-  const nums = [15, 30, 60,90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 410, 440, 480, 600, 900, 1200];
+  const nums = [
+    15, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 410, 440,
+    480, 600, 900, 1200,
+  ];
+  const distances = [400, 800, 1000, 5000, 10000];
   for (element of data_set) {
     // element["test"] ="this is just a test"
     if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
       const watts = await axios.get(
         // https://communityhub.strava.com/t5/developer-discussions/strava-api-keys-and-streams/m-p/5393
-        `https://www.strava.com/api/v3/activities/${element.id}/streams/watts?series_type=time&resolution=high`,
+        `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=watts,heartrate&key_by_type=true&resolution=high`,
         { headers: { Authorization: `${token}` } }
       );
-      if (watts.data.length >= 2) {
+      if (watts.status == 429) {
+        await sleep();
+      }
+
+      if (watts["data"]["watts"]) {
         element["watt_stream"] = watts.data;
         const pbs = {};
         for (num of nums) {
-          const averages = findAverage(num, element["watt_stream"][0].data);
+          const averages = findAverage(
+            num,
+            element["watt_stream"]["watts"]["data"]
+          );
           if (averages) {
             const sorted = quickSort(averages);
             pbs[num] = Math.round(sorted[sorted.length - 1]);
@@ -197,27 +198,32 @@ const importActivities = async (req, res) => {
         `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=high`,
         { headers: { Authorization: `${token}` } }
       );
+      if (run.status == 429) {
+        await sleep();
+      }
       element["run_stream"] = run.data;
       const runpbs = {};
-      for (num of nums) {
-        const averages = findAverage(
-          num,
-          element["run_stream"]["velocity_smooth"].data
-        );
-        if (averages) {
-          const sorted = quickSort(averages);
+      const runInMetres = runDistance(
+        element["run_stream"]["distance"]["data"]
+      );
 
-          runpbs[num] = 26.8224 / sorted[sorted.length - 1];
-        }
+      for (distance of distances) {
+        const quickest = getShortestSubarray(runInMetres, distance);
+        runpbs[distance] = quickest;
       }
+
       element["runpbs"] = runpbs;
     }
   }
 
   const allTime = {};
-
+  const runAllTime = {};
   const filteredActivities = data_set.filter((element) =>
     element.hasOwnProperty("pbs")
+  );
+
+  const runActivities = data_set.filter((element) =>
+    element.hasOwnProperty("runpbs")
   );
 
   // https://stackoverflow.com/questions/63971208/how-to-filter-array-of-objects-where-object-has-property-tagid-or-keywordid-in-j
@@ -231,7 +237,18 @@ const importActivities = async (req, res) => {
     console.log(max);
     allTime[num] = max;
   }
-  console.log(allTime, "THIS IS ALL TIME");
+
+  for (distance of distances) {
+    let max = runActivities.reduce(
+      (acc, value) =>
+        acc > value["runpbs"][distance.toString()]
+          ? acc
+          : value["runpbs"][distance.toString()],
+      0
+    );
+    console.log(max);
+    runAllTime[distance.toString()] = max;
+  }
 
   // const { id } = data_set[0].athlete;
   /**  the data needs to be reversed - because otherwise the latest activity is first - 
@@ -241,6 +258,9 @@ const importActivities = async (req, res) => {
   const allUserData = await UserActivities.findOneAndUpdate(
     { athlete_id: userId },
     { $push: { activities: { $each: data_set } } },
+
+    // `allUserData` is the document _after_ `update` was applied because of
+    // `new: true`
     { new: true }
   );
   console.log(userId);
@@ -254,6 +274,5 @@ router.get("/activities/import", importActivities);
 router.get("/activities/:after", getLatestActivities);
 
 router.get("/athlete", getAthlete);
-router.get("/:athleteId", getAthleteStats);
 
 module.exports = router;

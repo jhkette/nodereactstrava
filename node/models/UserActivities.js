@@ -9,10 +9,102 @@ const userActivitiesSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-
   activities: {
     type: [mongoose.Mixed],
   },
+  cyclingMaxHr:{
+    type: Number,
+  },
+  runningMaxHr:{
+    type: Number,
+  },
+  cyclingFTP:{
+    type: Number,
+  },
+
+  cyclingpbs: {
+    15: {
+      type: Number
+    },
+    30: {
+      type: Number
+    },
+    60: {
+      type: Number
+    },
+    90: {
+      type: Number
+    },
+    120: {
+      type: Number
+    },
+    150: {
+      type: Number
+    },
+    180: {
+      type: Number
+    },
+    210: {
+      type: Number
+    },
+    240: {
+      type: Number
+    },
+    270: {
+      type: Number
+    },
+    300: {
+      type: Number
+    },
+    330: {
+      type: Number
+    },
+    360: {
+      type: Number
+    },
+    390: {
+      type: Number
+    },
+    410: {
+      type: Number
+    },
+    440: {
+      type: Number
+    },
+    480: {
+      type: Number
+    },
+    600: {
+      type: Number
+    },
+    900: {
+      type: Number
+    },
+    1200: {
+      type: Number
+    }
+  },
+
+  runningpbs:{
+    400: {
+      type: Number
+    },
+    800: {
+      type: Number
+    },
+    1000: {
+      type: Number
+    },
+    3000: {
+      type: Number
+    },
+    5000: {
+      type: Number
+    },
+    10000: {
+      type: Number
+    }
+  }
  
 });
 
