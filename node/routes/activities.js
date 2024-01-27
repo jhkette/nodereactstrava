@@ -1,10 +1,19 @@
 const express = require("express");
 const axios = require("axios");
 const UserActivities = require("../models/UserActivities");
-const { quickSort, findAverage } = require("../helpers/arraysorting");
-const { runDistance, getShortestSubarray } = require("../helpers/runSorting");
+const {
+  largest,
+  findAverage,
 
+  calcMaxHr,
+  listPerformances,
+} = require("../helpers/arraysorting");
+const { runDistance, getShortestSubarray } = require("../helpers/runSorting");
+const { durations, distances } = require("../helpers/values");
 const { sleep } = require("../helpers/sleep");
+const { calcFtp } = require("../helpers/ftpCriticalCalculation");
+const _ = require( "lodash")
+const activityLoop = require("../helpers/addActivityData")
 
 const getAthlete = async (req, res) => {
   const errors = {};
@@ -48,7 +57,7 @@ const getLatestActivities = async (req, res) => {
     errors["error"] = "Permission not granted";
     return res.send(errors);
   }
-  try {
+  
     const response2 = await axios.get(
       `https://www.strava.com/api/v3/athlete/activities`,
       {
@@ -56,7 +65,7 @@ const getLatestActivities = async (req, res) => {
         params: { after: after },
       }
     );
-    console.log(response2);
+
     if (response2.status === 429) {
       await sleep();
     }
@@ -67,9 +76,9 @@ const getLatestActivities = async (req, res) => {
     }
     //**!!!!!!!!You NEED TO CHECK IF DATE THING RETURNS ANYTHING -CHECK LENGTH OF RESPONSE.DATA!!!!!!*/
 
-    const data_set = [...response2.data];
+    const data_list = [...response2.data];
 
-    const { id } = data_set[0].athlete;
+    const { id } = data_list[0].athlete;
     // equality check for latest actviity on mongo vs latest new activity
     const allActs = await UserActivities.findOne({ athlete_id: id });
     console.log(
@@ -78,39 +87,14 @@ const getLatestActivities = async (req, res) => {
     );
     if (
       allActs.activities[allActs.activities.length - 1].id ==
-      data_set[data_set.length - 1].id
+      data_list[data_list.length - 1].id
     ) {
       errors["error"] = "this activity has already been added";
       return res.send(errors);
     }
 
-    for (element of data_set) {
-      if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
-        const watts = await axios.get(
-          // https://communityhub.strava.com/t5/developer-discussions/strava-api-keys-and-streams/m-p/5393
-          `https://www.strava.com/api/v3/activities/${element.id}/streams/watts?series_type=time&resolution=medium`,
-          { headers: { Authorization: `${token}` } }
-        );
-        if (watts.status == 429) {
-          await sleep();
-        }
-        if (watts.data.length >= 2) {
-          element["watt_stream"] = watts.data;
-          // const sorted = quickSort(findAverage(element["watt_stream"][0].data))
-          // console.log(sorted)
-        }
-      }
-      if (element["type"] == "Run") {
-        const run = await axios.get(
-          `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=medium`,
-          { headers: { Authorization: `${token}` } }
-        );
-        if (run.status == 429) {
-          await sleep();
-        }
-        element["run_stream"] = run.data;
-      }
-    }
+   
+    const data_set = await activityLoop(data_list, token)
 
     console.log("data set for latest", data_set);
 
@@ -120,9 +104,7 @@ const getLatestActivities = async (req, res) => {
     );
     return res.send(data_set);
     // return res.json(data_set);
-  } catch (err) {
-    console.log(err);
-  }
+
 };
 
 const importActivities = async (req, res) => {
@@ -145,77 +127,34 @@ const importActivities = async (req, res) => {
   }
 
   let page_num = 1;
-  const data_set = [];
-  while (page_num < 3) {
-    const response2 = await axios.get(
-      `https://www.strava.com/api/v3/athlete/activities`,
-      {
-        headers: { Authorization: token },
-        params: { per_page: 20, page: page_num },
-      }
-    );
-    if (response2.status == 429) {
-      await sleep();
-    }
-    data_set.push(...response2.data);
-    page_num++;
-  }
-  const nums = [
-    15, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 410, 440,
-    480, 600, 900, 1200,
-  ];
-  const distances = [400, 800, 1000, 5000, 10000];
-  for (element of data_set) {
-    // element["test"] ="this is just a test"
-    if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
-      const watts = await axios.get(
-        // https://communityhub.strava.com/t5/developer-discussions/strava-api-keys-and-streams/m-p/5393
-        `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=watts,heartrate&key_by_type=true&resolution=high`,
-        { headers: { Authorization: `${token}` } }
-      );
-      if (watts.status == 429) {
-        await sleep();
-      }
-
-      if (watts["data"]["watts"]) {
-        element["watt_stream"] = watts.data;
-        const pbs = {};
-        for (num of nums) {
-          const averages = findAverage(
-            num,
-            element["watt_stream"]["watts"]["data"]
-          );
-          if (averages) {
-            const sorted = quickSort(averages);
-            pbs[num] = Math.round(sorted[sorted.length - 1]);
-          }
+  const data_list = [];
+  try{
+    while (page_num < 3) {
+      let response = await axios.get(
+        `https://www.strava.com/api/v3/athlete/activities`,
+        {
+          headers: { Authorization: token },
+          params: { per_page: 20, page: page_num },
         }
-        element["pbs"] = pbs;
-      }
-    }
-    if (element["type"] == "Run") {
-      const run = await axios.get(
-        `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=high`,
-        { headers: { Authorization: `${token}` } }
       );
-      if (run.status == 429) {
+      if (response.status == 429) {
         await sleep();
+        response = await axios.get(
+          `https://www.strava.com/api/v3/athlete/activities`,
+          {
+            headers: { Authorization: token },
+            params: { per_page: 20, page: page_num },
+          }
+        );
       }
-      element["run_stream"] = run.data;
-      const runpbs = {};
-      const runInMetres = runDistance(
-        element["run_stream"]["distance"]["data"]
-      );
-
-      for (distance of distances) {
-        const quickest = getShortestSubarray(runInMetres, distance);
-        runpbs[distance] = quickest;
-      }
-
-      element["runpbs"] = runpbs;
+      data_list.push(...response.data);
+      page_num++;
     }
+  } catch(err){
+    return res.status(400).send({error: err})
   }
 
+  const data_set = await activityLoop(data_list, token)
   const allTime = {};
   const runAllTime = {};
   const filteredActivities = data_set.filter((element) =>
@@ -226,29 +165,29 @@ const importActivities = async (req, res) => {
     element.hasOwnProperty("runpbs")
   );
 
+  const perf = listPerformances(filteredActivities, durations);
+
   // https://stackoverflow.com/questions/63971208/how-to-filter-array-of-objects-where-object-has-property-tagid-or-keywordid-in-j
 
-  for (num of nums) {
-    let max = filteredActivities.reduce(
-      (acc, value) =>
-        acc > value["pbs"][num.toString()] ? acc : value["pbs"][num.toString()],
-      0
-    );
-    console.log(max);
-    allTime[num] = max;
+  for (duration of durations) {
+    let result = filteredActivities.map(activity => activity.pbs[duration]);
+    allTime[duration] = _.max(result)
+
+    console.log(allTime[duration])
   }
 
   for (distance of distances) {
-    let max = runActivities.reduce(
-      (acc, value) =>
-        acc > value["runpbs"][distance.toString()]
-          ? acc
-          : value["runpbs"][distance.toString()],
-      0
-    );
-    console.log(max);
-    runAllTime[distance.toString()] = max;
+    let result = runActivities.map(activity => activity.runpbs[distance]);
+    runAllTime[distance.toString()] = _.min(result)
   }
+
+  const ftp = calcFtp(allTime);
+
+  // const ftp = 320
+
+  const maxCyclingHr = calcMaxHr(filteredActivities, "ride");
+  const runMaxHr = calcMaxHr(runActivities, "run");
+  console.log("thiis is maxcycling hr", maxCyclingHr, runMaxHr);
 
   // const { id } = data_set[0].athlete;
   /**  the data needs to be reversed - because otherwise the latest activity is first - 
@@ -257,7 +196,52 @@ const importActivities = async (req, res) => {
   data_set.reverse();
   const allUserData = await UserActivities.findOneAndUpdate(
     { athlete_id: userId },
-    { $push: { activities: { $each: data_set } } },
+    {
+      $push: { activities: { $each: data_set } },
+      $set: {
+        cyclingpbs: {
+          15: allTime["15"],
+          30: allTime["30"],
+          60: allTime["60"],
+          90: allTime["90"],
+          120: allTime["120"],
+          150: allTime["150"],
+          180: allTime["180"],
+          210: allTime["210"],
+          240: allTime["240"],
+          270: allTime["270"],
+          300: allTime["300"],
+          330: allTime["330"],
+          360: allTime["360"],
+          390: allTime["390"],
+          410: allTime["410"],
+          440: allTime["440"],
+          480: allTime["480"],
+          600: allTime["600"],
+          720: allTime["720"],
+          900: allTime["900"],
+          1200: allTime["1200"],
+        },
+        runningpbs: {
+          400: runAllTime[400],
+          800: runAllTime[800],
+          1000: runAllTime[1000],
+          3000: runAllTime[3000],
+          5000: runAllTime[5000],
+        },
+        topFiveActivities:  {
+          15: perf["15"],
+          60: perf["60"],
+          300: perf["300"],
+          600: perf["600"],
+          1200: perf["1200"],
+
+        },
+        cyclingFTP: ftp,
+        cyclingMaxHr: maxCyclingHr,
+        runningMaxHr: runMaxHr,
+      },
+    },
 
     // `allUserData` is the document _after_ `update` was applied because of
     // `new: true`

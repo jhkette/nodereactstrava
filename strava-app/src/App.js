@@ -46,7 +46,7 @@ function App() {
         }
         console.log(userData);
         setAthlete(userData.data.profile);
-        setUseractivities(userData.data.user.activities);
+        setUseractivities(userData.data.user);
         setLatest(
           userData.data.user.activities[
             userData.data.user.activities.length - 1
