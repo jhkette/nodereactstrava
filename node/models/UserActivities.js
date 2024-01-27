@@ -12,100 +12,138 @@ const userActivitiesSchema = mongoose.Schema({
   activities: {
     type: [mongoose.Mixed],
   },
-  cyclingMaxHr:{
+  topFiveActivities: {
+    
+
+    15: {
+      type: [mongoose.Mixed],
+    },
+    60: {
+      type: [mongoose.Mixed],
+    },
+    300: {
+      type: [mongoose.Mixed],
+    },
+    600: {
+      type: [mongoose.Mixed],
+    },
+    1200: {
+      type: [mongoose.Mixed],
+    },
+  },
+  cyclingMaxHr: {
     type: Number,
   },
-  runningMaxHr:{
+  runningMaxHr: {
     type: Number,
   },
-  cyclingFTP:{
+  cyclingFTP: {
     type: Number,
+  },
+  hrZones: {
+    zone1: {
+      type: [Number],
+    },
+    zone2: {
+      type: [Number],
+    },
+    zone3: {
+      type: [Number],
+    },
+    zone4: {
+      type: [Number],
+    },
+    zone5: {
+      type: [Number],
+    },
   },
 
   cyclingpbs: {
     15: {
-      type: Number
+      type: Number,
     },
     30: {
-      type: Number
+      type: Number,
     },
     60: {
-      type: Number
+      type: Number,
     },
     90: {
-      type: Number
+      type: Number,
     },
     120: {
-      type: Number
+      type: Number,
     },
     150: {
-      type: Number
+      type: Number,
     },
     180: {
-      type: Number
+      type: Number,
     },
     210: {
-      type: Number
+      type: Number,
     },
     240: {
-      type: Number
+      type: Number,
     },
     270: {
-      type: Number
+      type: Number,
     },
     300: {
-      type: Number
+      type: Number,
     },
     330: {
-      type: Number
+      type: Number,
     },
     360: {
-      type: Number
+      type: Number,
     },
     390: {
-      type: Number
+      type: Number,
     },
     410: {
-      type: Number
+      type: Number,
     },
     440: {
-      type: Number
+      type: Number,
     },
     480: {
-      type: Number
+      type: Number,
     },
     600: {
-      type: Number
+      type: Number,
+    },
+    720: {
+      type: Number,
     },
     900: {
-      type: Number
+      type: Number,
     },
     1200: {
-      type: Number
-    }
+      type: Number,
+    },
   },
 
-  runningpbs:{
+  runningpbs: {
     400: {
-      type: Number
+      type: Number,
     },
     800: {
-      type: Number
+      type: Number,
     },
     1000: {
-      type: Number
+      type: Number,
     },
     3000: {
-      type: Number
+      type: Number,
     },
     5000: {
-      type: Number
+      type: Number,
     },
     10000: {
-      type: Number
-    }
-  }
- 
+      type: Number,
+    },
+  },
 });
 
 module.exports = mongoose.model("UserActivities", userActivitiesSchema);

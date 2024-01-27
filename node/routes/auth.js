@@ -6,7 +6,7 @@ const login = (req, res) => {
 };
 
 const link = (req, res) => {
-  const link = client.getAuthorizationUri()
+  const link = client.getAuthorizationUri();
   return res.json({ link: link });
 };
 
@@ -17,14 +17,14 @@ const authorisation = async (req, res) => {
     errors["error"] = "unable to login";
     return res.status(400).json(errors);
   }
- 
+
   res.cookie("token", token.access_token);
   return res.redirect(process.env.ORIGIN);
 };
 
 const logout = (req, res) => {
   res.clearCookie("token");
-  return res.json({msg: "logged out succesfully"});
+  return res.json({ msg: "logged out succesfully" });
 };
 const router = express.Router();
 router.get("/link", link);
