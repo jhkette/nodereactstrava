@@ -12,25 +12,7 @@ const userActivitiesSchema = mongoose.Schema({
   activities: {
     type: [mongoose.Mixed],
   },
-  topFiveActivities: {
-    
 
-    15: {
-      type: [mongoose.Mixed],
-    },
-    60: {
-      type: [mongoose.Mixed],
-    },
-    300: {
-      type: [mongoose.Mixed],
-    },
-    600: {
-      type: [mongoose.Mixed],
-    },
-    1200: {
-      type: [mongoose.Mixed],
-    },
-  },
   cyclingMaxHr: {
     type: Number,
   },
@@ -40,7 +22,25 @@ const userActivitiesSchema = mongoose.Schema({
   cyclingFTP: {
     type: Number,
   },
-  hrZones: {
+  bikeHrZones: {
+    zone1: {
+      type: [Number],
+    },
+    zone2: {
+      type: [Number],
+    },
+    zone3: {
+      type: [Number],
+    },
+    zone4: {
+      type: [Number],
+    },
+    zone5: {
+      type: [Number],
+    },
+  },
+
+  runHrZones: {
     zone1: {
       type: [Number],
     },

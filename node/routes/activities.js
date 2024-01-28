@@ -1,19 +1,18 @@
 const express = require("express");
 const axios = require("axios");
-const UserActivities = require("../models/UserActivities");
-const {
-  largest,
-  findAverage,
-
-  calcMaxHr,
-  listPerformances,
-} = require("../helpers/arraysorting");
-const { runDistance, getShortestSubarray } = require("../helpers/runSorting");
-const { durations, distances } = require("../helpers/values");
-const { sleep } = require("../helpers/sleep");
-const { calcFtp } = require("../helpers/ftpCriticalCalculation");
 const _ = require( "lodash")
+
+// user activities model
+const UserActivities = require("../models/UserActivities");
+// helper functions
+const { calcMaxHr,
+  getHrZones} = require("../helpers/hrCalculation");
+const { sleep } = require("../helpers/sleep");
+const { calcFtp } = require("../helpers/ftpCalculation");
 const activityLoop = require("../helpers/addActivityData")
+
+// values
+const { durations, distances } = require("../helpers/values");
 
 const getAthlete = async (req, res) => {
   const errors = {};
@@ -58,7 +57,7 @@ const getLatestActivities = async (req, res) => {
     return res.send(errors);
   }
   
-    const response2 = await axios.get(
+   let response2 = await axios.get(
       `https://www.strava.com/api/v3/athlete/activities`,
       {
         headers: { Authorization: token },
@@ -68,6 +67,13 @@ const getLatestActivities = async (req, res) => {
 
     if (response2.status === 429) {
       await sleep();
+         response2 = await axios.get(
+        `https://www.strava.com/api/v3/athlete/activities`,
+        {
+          headers: { Authorization: token },
+          params: { after: after },
+        }
+      );
     }
     // console.log(response2.data)
     if (response2.data.length == 0) {
@@ -165,10 +171,6 @@ const importActivities = async (req, res) => {
     element.hasOwnProperty("runpbs")
   );
 
-  const perf = listPerformances(filteredActivities, durations);
-
-  // https://stackoverflow.com/questions/63971208/how-to-filter-array-of-objects-where-object-has-property-tagid-or-keywordid-in-j
-
   for (duration of durations) {
     let result = filteredActivities.map(activity => activity.pbs[duration]);
     allTime[duration] = _.max(result)
@@ -183,11 +185,14 @@ const importActivities = async (req, res) => {
 
   const ftp = calcFtp(allTime);
 
-  // const ftp = 320
-
   const maxCyclingHr = calcMaxHr(filteredActivities, "ride");
+
   const runMaxHr = calcMaxHr(runActivities, "run");
-  console.log("thiis is maxcycling hr", maxCyclingHr, runMaxHr);
+
+  const bikeZones = getHrZones(maxCyclingHr)
+
+  const runZones = getHrZones(runMaxHr)
+
 
   // const { id } = data_set[0].athlete;
   /**  the data needs to be reversed - because otherwise the latest activity is first - 
@@ -229,14 +234,22 @@ const importActivities = async (req, res) => {
           3000: runAllTime[3000],
           5000: runAllTime[5000],
         },
-        topFiveActivities:  {
-          15: perf["15"],
-          60: perf["60"],
-          300: perf["300"],
-          600: perf["600"],
-          1200: perf["1200"],
+        bikeHrZones:{
+          zone1: bikeZones[1],
+          zone2: bikeZones[2],
+          zone3: bikeZones[3],
+          zone4: bikeZones[4],
+          zone5: bikeZones[5]
+        },
+        runHrZones:{
+          zone1: runZones[1],
+          zone2: runZones[2],
+          zone3: runZones[3],
+          zone4: runZones[4],
+          zone5: runZones[5]
 
         },
+
         cyclingFTP: ftp,
         cyclingMaxHr: maxCyclingHr,
         runningMaxHr: runMaxHr,
