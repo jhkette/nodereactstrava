@@ -33,7 +33,7 @@ function getShortestSubarray(A, X) {
         }
         dq.push(i);
     }
-    return ans === Infinity ? -1 : ans;
+    return ans === Infinity ? null : ans;
 }
 
 // let arr = [2, 1, 1, -4, 3, 1, -1, 2];
