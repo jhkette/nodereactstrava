@@ -1,6 +1,7 @@
+// libraries
 const axios = require("axios");
 const _ = require( "lodash")
-
+// helper functions
 const { sleep } = require("./sleep");
 const { findAverage } = require("./arraysorting");
 const { runDistance, getShortestSubarray } = require("./runSorting");

@@ -1,15 +1,17 @@
+// libraries
 const express = require("express");
 const axios = require("axios");
-const _ = require( "lodash")
+const _ = require("lodash");
 
 // user activities model
 const UserActivities = require("../models/UserActivities");
 // helper functions
-const { calcMaxHr,
-  getHrZones} = require("../helpers/hrCalculation");
+const { calcMaxHr, getHrZones } = require("../helpers/hrCalculation");
 const { sleep } = require("../helpers/sleep");
 const { calcFtp } = require("../helpers/ftpCalculation");
-const activityLoop = require("../helpers/addActivityData")
+const activityLoop = require("../helpers/addActivityData");
+const calculateTss = require("../helpers/calculateTss");
+const checkPbs = require("../helpers/checksPbs");
 
 // values
 const { durations, distances } = require("../helpers/values");
@@ -56,61 +58,77 @@ const getLatestActivities = async (req, res) => {
     errors["error"] = "Permission not granted";
     return res.send(errors);
   }
-  
-   let response2 = await axios.get(
+
+  let response2 = await axios.get(
+    `https://www.strava.com/api/v3/athlete/activities`,
+    {
+      headers: { Authorization: token },
+      params: { after: after },
+    }
+  );
+
+  if (response2.status === 429) {
+    await sleep();
+    response2 = await axios.get(
       `https://www.strava.com/api/v3/athlete/activities`,
       {
         headers: { Authorization: token },
         params: { after: after },
       }
     );
+  }
 
-    if (response2.status === 429) {
-      await sleep();
-         response2 = await axios.get(
-        `https://www.strava.com/api/v3/athlete/activities`,
-        {
-          headers: { Authorization: token },
-          params: { after: after },
-        }
-      );
-    }
-    // console.log(response2.data)
-    if (response2.data.length == 0) {
-      errors["error"] = "no activities found";
-      return res.send(errors);
-    }
-    //**!!!!!!!!You NEED TO CHECK IF DATE THING RETURNS ANYTHING -CHECK LENGTH OF RESPONSE.DATA!!!!!!*/
+  if (response2.data.length == 0) {
+    errors["error"] = "no activities found";
+    return res.send(errors);
+  }
 
-    const data_list = [...response2.data];
+  const data_list = [...response2.data];
 
-    const { id } = data_list[0].athlete;
-    // equality check for latest actviity on mongo vs latest new activity
-    const allActs = await UserActivities.findOne({ athlete_id: id });
-    console.log(
-      allActs.activities[allActs.activities.length - 1],
-      "the last activity"
+  const { id } = data_list[0].athlete;
+  // equality check for latest actviity on mongo vs latest new activity
+  const allActs = await UserActivities.findOne({ athlete_id: id });
+  console.log(
+    allActs.activities[allActs.activities.length - 1],
+    "the last activity"
+  );
+  if (
+    allActs.activities[allActs.activities.length - 1].id ==
+    data_list[data_list.length - 1].id
+  ) {
+    errors["error"] = "this activity has already been added";
+    return res.send(errors);
+  }
+
+  const data_set = await activityLoop(data_list, token);
+
+  // check if individual activty pbs are better than all time pbs
+
+  const { cyclingiImprovements, runImprovements } = checkPbs(
+    data_set,
+    allActs.cyclingpbs,
+    allActs.cyclingpbs.runningpbs
+  );
+
+  //add tss
+  for (element of data_set) {
+    const finalTss = calculateTss(
+      element,
+      allActs.cyclingFTP,
+      allActs.bikeHrZones,
+      allActs.runHrZones
     );
-    if (
-      allActs.activities[allActs.activities.length - 1].id ==
-      data_list[data_list.length - 1].id
-    ) {
-      errors["error"] = "this activity has already been added";
-      return res.send(errors);
-    }
+    element["tss"] = finalTss;
+  }
 
-   
-    const data_set = await activityLoop(data_list, token)
+  console.log("data set for latest", data_set);
 
-    console.log("data set for latest", data_set);
-
-    await UserActivities.updateOne(
-      { athlete_id: id },
-      { $push: { activities: { $each: data_set } } }
-    );
-    return res.send(data_set);
-    // return res.json(data_set);
-
+  await UserActivities.updateOne(
+    { athlete_id: id },
+    { $push: { activities: { $each: data_set } } }
+  );
+  return res.send(data_set);
+  // return res.json(data_set);
 };
 
 const importActivities = async (req, res) => {
@@ -134,7 +152,7 @@ const importActivities = async (req, res) => {
 
   let page_num = 1;
   const data_list = [];
-  try{
+  try {
     while (page_num < 3) {
       let response = await axios.get(
         `https://www.strava.com/api/v3/athlete/activities`,
@@ -156,14 +174,14 @@ const importActivities = async (req, res) => {
       data_list.push(...response.data);
       page_num++;
     }
-  } catch(err){
-    return res.status(400).send({error: err})
+  } catch (err) {
+    return res.status(400).send({ error: err });
   }
 
-  const data_set = await activityLoop(data_list, token)
+  const data_set = await activityLoop(data_list, token);
   const allTime = {};
   const runAllTime = {};
-  const filteredActivities = data_set.filter((element) =>
+  const bikeActivities = data_set.filter((element) =>
     element.hasOwnProperty("pbs")
   );
 
@@ -172,27 +190,31 @@ const importActivities = async (req, res) => {
   );
 
   for (duration of durations) {
-    let result = filteredActivities.map(activity => activity.pbs[duration]);
-    allTime[duration] = _.max(result)
+    let result = bikeActivities.map((activity) => activity.pbs[duration]);
+    allTime[duration] = _.max(result);
 
-    console.log(allTime[duration])
+    console.log(allTime[duration]);
   }
 
   for (distance of distances) {
-    let result = runActivities.map(activity => activity.runpbs[distance]);
-    runAllTime[distance.toString()] = _.min(result)
+    let result = runActivities.map((activity) => activity.runpbs[distance]);
+    runAllTime[distance.toString()] = _.min(result);
   }
 
   const ftp = calcFtp(allTime);
 
-  const maxCyclingHr = calcMaxHr(filteredActivities, "ride");
+  const maxCyclingHr = calcMaxHr(bikeActivities, "ride");
 
   const runMaxHr = calcMaxHr(runActivities, "run");
 
-  const bikeZones = getHrZones(maxCyclingHr)
+  const bikeZones = getHrZones(maxCyclingHr);
 
-  const runZones = getHrZones(runMaxHr)
+  const runZones = getHrZones(runMaxHr);
 
+  for (element of data_set) {
+    const finalTss = calculateTss(element, ftp, bikeZones, runZones);
+    element["tss"] = finalTss;
+  }
 
   // const { id } = data_set[0].athlete;
   /**  the data needs to be reversed - because otherwise the latest activity is first - 
@@ -234,20 +256,19 @@ const importActivities = async (req, res) => {
           3000: runAllTime[3000],
           5000: runAllTime[5000],
         },
-        bikeHrZones:{
+        bikeHrZones: {
           zone1: bikeZones[1],
           zone2: bikeZones[2],
           zone3: bikeZones[3],
           zone4: bikeZones[4],
-          zone5: bikeZones[5]
+          zone5: bikeZones[5],
         },
-        runHrZones:{
+        runHrZones: {
           zone1: runZones[1],
           zone2: runZones[2],
           zone3: runZones[3],
           zone4: runZones[4],
-          zone5: runZones[5]
-
+          zone5: runZones[5],
         },
 
         cyclingFTP: ftp,

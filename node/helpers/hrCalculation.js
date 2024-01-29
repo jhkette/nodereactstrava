@@ -60,7 +60,7 @@ function calcMaxHr(performances, activityType) {
   }
   // https://www.myprocoach.net/calculators/hr-zones/#:~:text=Work%20out%20your%20heart%20rate%20zones&text=Zone%201%3A%20Easy%20%E2%80%93%2068%25,fat%20and%20carbohydrates%20as%20fuel.
   // Zone	Intensity	Percentage of HRmax
-  // Zone 1	Very light	50–60%
+  // Zone 1	Very light	68–73%
   // Zone 2	Light	    60–70%
   // Zone 3	Moderate	70–80%
   // Zone 4	Hard	   80–90%
