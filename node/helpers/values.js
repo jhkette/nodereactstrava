@@ -4,4 +4,6 @@ const durations = [
 ];
 const distances = [400, 800, 1000, 5000, 10000];
 
-module.exports = { durations, distances };
+const criticalPace = 1800
+
+module.exports = { durations, distances, criticalPace };

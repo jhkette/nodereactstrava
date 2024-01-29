@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { durations, distances } = require("./values");
+
 
 // https://sunjetliu.medium.com/algorithm-practice-find-averages-of-subarrays-db9108c0d55e
 function findAverage(K, arr) {
