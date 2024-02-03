@@ -66,13 +66,13 @@ function calcMaxHr(performances, activityType) {
   // Zone 4	Hard	   80–90%
   // Zone 5	Maximum	   90–100%
   
-  function getHrZones(hr){
+function getHrZones(hr){
     const zones = {}
-    zones[1] = [Math.ceil((hr * .68)), Math.ceil((hr* .73))]
-    zones[2] = [Math.ceil((hr * .73)), Math.ceil((hr* .80))]
-    zones[3] = [Math.ceil((hr * .8)), Math.ceil((hr* .87))]
-    zones[4] = [Math.ceil((hr * .87)), Math.ceil((hr* .93))]
-    zones[5] = [Math.ceil((hr * .93)), hr]
+    zones['zone1'] = [Math.ceil((hr * .68)), Math.ceil((hr* .73))]
+    zones['zone2'] = [Math.ceil((hr * .73)), Math.ceil((hr* .80))]
+    zones['zone3'] = [Math.ceil((hr * .8)), Math.ceil((hr* .87))]
+    zones['zone4'] = [Math.ceil((hr * .87)), Math.ceil((hr* .93))]
+    zones['zone5'] = [Math.ceil((hr * .93)), hr]
   
     return zones
   
