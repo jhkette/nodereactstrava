@@ -7,6 +7,8 @@ import moment from "moment";
 // components
 import ReturnProfile from "./components/profile";
 import AthleteRecords from "./components/AthleteRecords";
+import Linechart from "./linechart";
+import DoughnutChart from "./doughnut";
 
 function App() {
   const [link, setLink] = useState();
@@ -29,7 +31,10 @@ function App() {
       });
     setToken(Cookies.get("token"));
   }, []);
-
+  // https://code.tutsplus.com/getting-started-with-chartjs-scales--cms-28477t
+  // https://stackoverflow.com/questions/48081521/line-chart-with-x-y-point-data-displays-only-2-values
+  // https://jsfiddle.net/1sxrtcw5/1/
+  //https://stackoverflow.com/questions/37204298/how-can-i-hide-dataset-labels-in-chart-js-v2
   useEffect(() => {
     const authToken = Cookies.get("token");
     const config = {
@@ -94,10 +99,10 @@ function App() {
       }
     };
     console.log("the latest use effect ran", latest);
-    if (token && latest) {
+    if (token && latest && userActivities.length) {
       getLatestData();
     }
-  }, [token, latest]);
+  }, [token, latest, userActivities]);
 
   const importData = async () => {
     const config = {
@@ -159,6 +164,8 @@ function App() {
               import
             </button>
           )}
+          <Linechart />
+          {/* <DoughnutChart /> */}
         </div>
       </main>
     </div>

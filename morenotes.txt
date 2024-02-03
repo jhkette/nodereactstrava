@@ -25,3 +25,13 @@ https://www.trainingpeaks.com/learn/articles/estimating-training-stress-score-ts
 
 
 https://support.stagesindoorcycling.com/en/support/solutions/articles/11000102233-what-is-ftp-and-how-is-it-calculated-#:~:text=As%20an%20example%2C%20the%205,FTP%20estimate%20is%20150%20watts.
+
+// TSS Guide ie what counts as high tss
+// https://support.garmin.com/en-GB/?faq=9EOIDzMcjx7kFqTJUGqHj5#:~:text=TSS%C2%AE%20Guide&text=150%20to%20300%20(medium)%3A,several%20days%20after%20the%20ride.
+
+// V02 max estimate based on 5 min power
+https://pubmed.ncbi.nlm.nih.gov/34225254/#:~:text=Accordingly%2C%20VO2max%20could%20be%20predicted,%2Dmin%20relative%20power%20output).
+
+// v02 max estimate from running
+// https://www.tandfonline.com/doi/abs/10.1080/02701367.2002.10608993
+

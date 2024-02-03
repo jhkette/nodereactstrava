@@ -33,14 +33,14 @@ const getAthlete = async (req, res) => {
     });
 
     if (foundUserActs) {
-      return res.json({ profile: response.data, user: foundUserActs });
+      return res.send({ profile: response.data, user: foundUserActs });
     }
 
     const id = parseInt(response.data.id);
     const newUser = new UserActivities({ athlete_id: id });
     const userToSave = await newUser.save();
 
-    return res.json({ profile: response.data, user: userToSave });
+    return res.send({ profile: response.data, user: userToSave });
   } catch (err) {
     console.log(err);
   }
@@ -104,11 +104,48 @@ const getLatestActivities = async (req, res) => {
 
   // check if individual activty pbs are better than all time pbs
 
-  const { cyclingiImprovements, runImprovements } = checkPbs(
+  console.log(allActs.cyclingpbs, "THIS IS CYCLING PBS")
+
+  const [cyclingiImprovements, runImprovements] = checkPbs(
     data_set,
     allActs.cyclingpbs,
-    allActs.cyclingpbs.runningpbs
+    allActs.runningpbs
   );
+  
+  // console.log(cyclingiImprovements, "THIS IS CYCLING IMPROVEMENTS")
+  // if(Object.keys(cyclingiImprovements)){
+
+  // }
+
+  if (Object.keys(cyclingiImprovements)) {
+    for (const key in cyclingiImprovements) {
+      await UserActivities.updateOne(
+        { athlete_id: id },
+        {
+          $set: {
+            cyclingpbs: {
+              key: cyclingiImprovements[key],
+            },
+          },
+        }
+      );
+    }
+  }
+
+  if (Object.keys(runImprovements)) {
+    for (const key in runImprovements) {
+      await UserActivities.updateOne(
+        { athlete_id: id },
+        {
+          $set: {
+            cyclingpbs: {
+              key: runImprovements[key],
+            },
+          },
+        }
+      );
+    }
+  }
 
   //add tss
   for (element of data_set) {
@@ -205,7 +242,7 @@ const importActivities = async (req, res) => {
 
   const maxCyclingHr = calcMaxHr(bikeActivities, "ride");
 
-  const runMaxHr = calcMaxHr(runActivities, "run");
+  const runMaxHr =  calcMaxHr(runActivities, "run");
 
   const bikeZones = getHrZones(maxCyclingHr);
 

@@ -7,3 +7,4 @@ const distances = [400, 800, 1000, 5000, 10000];
 const criticalPace = 1800
 
 module.exports = { durations, distances, criticalPace };
+
