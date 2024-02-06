@@ -3,9 +3,11 @@ const _ = require("lodash");
 
 // https://sunjetliu.medium.com/algorithm-practice-find-averages-of-subarrays-db9108c0d55e
 function findAverage(K, arr) {
+  // if K is bigger than array length return null 
   if (K > arr.length) {
     return null;
   }
+  // store result in array
   const result = [];
   let windowSum = 0.0,
     windowStart = 0;

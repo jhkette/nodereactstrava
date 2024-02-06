@@ -234,10 +234,13 @@ const importActivities = async (req, res) => {
   }
 
   for (distance of distances) {
+    
     let result = runActivities.map((activity) => activity.runpbs[distance]);
-    runAllTime[distance.toString()] = _.min(result);
+    console.log(result)
+    runAllTime[distance] = _.min(result);
   }
-
+  
+  console.log(runAllTime)
   const ftp = calcFtp(allTime);
 
   const maxCyclingHr = calcMaxHr(bikeActivities, "ride");
@@ -257,6 +260,7 @@ const importActivities = async (req, res) => {
   /**  the data needs to be reversed - because otherwise the latest activity is first - 
   activities need to be arranged
    * first to last **/
+  console.log(runAllTime[2414])
   data_set.reverse();
   const allUserData = await UserActivities.findOneAndUpdate(
     { athlete_id: userId },
@@ -290,22 +294,24 @@ const importActivities = async (req, res) => {
           400: runAllTime[400],
           800: runAllTime[800],
           1000: runAllTime[1000],
+          2414: runAllTime[2414],
           3000: runAllTime[3000],
           5000: runAllTime[5000],
+          10000: runAllTime[10000],
         },
         bikeHrZones: {
-          zone1: bikeZones[1],
-          zone2: bikeZones[2],
-          zone3: bikeZones[3],
-          zone4: bikeZones[4],
-          zone5: bikeZones[5],
+          zone1: bikeZones['zone1'],
+          zone2: bikeZones['zone2'],
+          zone3: bikeZones['zone3'],
+          zone4: bikeZones['zone4'],
+          zone5: bikeZones['zone5'],
         },
         runHrZones: {
-          zone1: runZones[1],
-          zone2: runZones[2],
-          zone3: runZones[3],
-          zone4: runZones[4],
-          zone5: runZones[5],
+          zone1: runZones['zone1'],
+          zone2: runZones['zone2'],
+          zone3: runZones['zone3'],
+          zone4: runZones['zone4'],
+          zone5: runZones['zone5'],
         },
 
         cyclingFTP: ftp,

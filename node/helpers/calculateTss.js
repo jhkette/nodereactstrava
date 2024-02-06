@@ -9,7 +9,7 @@
 // weighted_average_watts
 //  moving_time
 function calculateTss(activity, ftp, bikeHrZones, runZones) {
-  console.log(activity, "activity for tss", bikeHrZones, runZones)
+  // console.log(activity, "activity for tss", bikeHrZones, runZones)
   if (activity["weighted_average_watts"]) {
     const intensityFactor = activity["weighted_average_watts"] / ftp;
     const tss =
@@ -18,7 +18,7 @@ function calculateTss(activity, ftp, bikeHrZones, runZones) {
         intensityFactor) /
         (ftp * 3600)) *
       100;
-    return tss;
+    return Math.round(tss);
   }
   let zones;
   if (!activity["average_heartrate"]) {
@@ -42,7 +42,7 @@ function calculateTss(activity, ftp, bikeHrZones, runZones) {
     const hours = activity["moving_time"] / 3600;
     const hr = activity["average_heartrate"];
     let tss;
-    console.log(bikeHrZones, runZones, "these are zones")
+    // console.log(bikeHrZones, runZones, "these are zones")
     switch (true) {
         case hr <= zones.zone1[1]:
           tss= hours * tssScore[1];
@@ -63,7 +63,7 @@ function calculateTss(activity, ftp, bikeHrZones, runZones) {
           tss = 0
       }
 
-    return tss;
+    return Math.round(tss);
   }
 
 }
