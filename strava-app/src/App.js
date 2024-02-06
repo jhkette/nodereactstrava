@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Localbase from "localbase";
+import _ from "lodash"
 import moment from "moment";
 
 // components
@@ -9,6 +9,7 @@ import ReturnProfile from "./components/profile";
 import AthleteRecords from "./components/AthleteRecords";
 import Linechart from "./linechart";
 import DoughnutChart from "./doughnut";
+import ActivityList from "./ActivityList";
 
 function App() {
   const [link, setLink] = useState();
@@ -17,6 +18,7 @@ function App() {
   const [athlete, setAthlete] = useState({});
   const [latest, setLatest] = useState(null);
   const [userActivities, setUseractivities] = useState([]);
+  const [userRecords, setUserRecords] = useState({});
 
   const baseURL = "http://localhost:3000";
   /**
@@ -51,7 +53,9 @@ function App() {
         }
         console.log(userData);
         setAthlete(userData.data.profile);
-        setUseractivities(userData.data.user);
+        const userRecordsInfo =  _.omit(userData.data.user, 'activities')
+        setUserRecords(userRecordsInfo)
+        setUseractivities(userData.data.user.activities);
         setLatest(
           userData.data.user.activities[
             userData.data.user.activities.length - 1
@@ -99,11 +103,19 @@ function App() {
       }
     };
     console.log("the latest use effect ran", latest);
-    if (token && latest && userActivities.length) {
+    if (token && latest && userActivities) {
       getLatestData();
     }
   }, [token, latest, userActivities]);
 
+  /**
+   * function importData
+   * function runs when user logs in for first time
+   * and first set of data is imported. 
+   * setsUserRecords and 
+   * setsUseractivities 
+   * @returns void
+   */
   const importData = async () => {
     const config = {
       headers: { Authorization: `Bearer ${token}`, id: athlete.id },
@@ -115,7 +127,9 @@ function App() {
       console.log(response.data.error);
       return;
     }
-    setUseractivities(response.data);
+    const userRecordsInfo =  _.omit(response.data, 'activities')
+    setUserRecords(userRecordsInfo)
+    setUseractivities(response.data.activities);
   };
 
   const logout = () => {
@@ -154,18 +168,25 @@ function App() {
             </button>
           )}
 
-          {userActivities.length ? (
-            ""
-          ) : (
+          {userActivities.length === 0 &&
+            (<>
             <button
               className="bg-sky-500/100 px-6 py-2 rounded-md"
               onClick={importData}
             >
               import
             </button>
+            <p>If this is your first time logging in - please click import. This will retrieve data from Strava. Future activities
+              will be added automatically.
+            </p>
+            </>
           )}
           <Linechart />
-          {/* <DoughnutChart /> */}
+          {userActivities.length && (
+          <ActivityList activities={userActivities}/>
+          ) }
+          <DoughnutChart />
+          
         </div>
       </main>
     </div>

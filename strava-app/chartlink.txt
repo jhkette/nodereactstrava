@@ -7,3 +7,7 @@
 
 
   // https://www.chartjs.org/docs/latest/samples/tooltip/content.html // TOOLTIP USEFUL AND IMPORTANT
+
+
+  // https://www.youtube.com/watch?v=W81cRus9QEU doughnut with needle
+  // https://inscyd.com/article/vo2max-charts-by-age-gender-sport/ v02 max chart

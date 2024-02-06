@@ -67,6 +67,7 @@ function calcMaxHr(performances, activityType) {
   // Zone 5	Maximum	   90–100%
   
 function getHrZones(hr){
+  console.log(hr, [Math.ceil((hr * .68)), Math.ceil((hr* .73))], "TESTING GETHRZONE FUNCTION" )
     const zones = {}
     zones['zone1'] = [Math.ceil((hr * .68)), Math.ceil((hr* .73))]
     zones['zone2'] = [Math.ceil((hr * .73)), Math.ceil((hr* .80))]

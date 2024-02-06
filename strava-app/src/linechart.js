@@ -24,13 +24,35 @@ ChartJS.register(
   PointElement,
   LineElement,
   TimeScale,
+ 
   annotationPlugin,
   Title,
   Tooltip,
   Legend
 );
+
+export default function Linechart() {
 const labels = [15, 30, 60, 120, 180, 240, 400, 600];
-export const options = {
+
+
+const floatingLabels = {
+  id: 'floatingLabels',
+  afterDatasetDraw(chart, args, options){
+    const {ctx, scales:{x,y}} = chart
+    // var xAxis = chart.scales.x;
+    // var yAxis = chart.scales.y;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255, 26,104,1)';
+    ctx.font = 'bolder 12px Arial'
+    var finalx = x.getPixelForValue('300')
+    var finaly = y.getPixelForValue('310')
+    ctx.fillText('Functional threshold power estimate', finalx, finaly)
+  }
+}
+
+
+const options = {
   responsive: true,
   plugins: {
     title: {
@@ -49,6 +71,22 @@ export const options = {
         },
       },
     },
+    tooltip: {
+      callbacks: {
+        label: ((tooltipItem, data) => {
+          return tooltipItem.formattedValue + " watts"
+        }),
+        title: ((tooltipItems, data) => {
+          const tooltipItem = tooltipItems[0];
+          if(tooltipItem.label <= 60){
+            return tooltipItem.label + " seconds"
+          }
+          const seconds = tooltipItem.label % 60
+          
+          return `${(tooltipItem.label - seconds) / 60} mins ${seconds} seconds`
+        })
+      }
+    }
   },
   scales: {
     x: {
@@ -56,7 +94,7 @@ export const options = {
       beginAtZero: true,
       ticks: {
         stepSize: 60,
-        color: "green",
+        color: "#1a1a1a",
         font: {
           weight: "bold",
         },
@@ -95,7 +133,7 @@ export const options = {
 };
 
 //   https://www.chartjs.org/chartjs-plugin-annotation/latest/guide/types/line.html
-export const data = {
+ const data = {
   labels,
   datasets: [
     {
@@ -110,6 +148,6 @@ export const data = {
   ],
 };
 
-export default function Linechart() {
-  return <Line options={options} data={data}  />;
+
+  return <Line options={options} plugins={[floatingLabels]} data={data}  />;
 }
