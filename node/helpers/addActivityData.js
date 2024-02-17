@@ -1,27 +1,25 @@
 // libraries
 const axios = require("axios");
-const _ = require( "lodash")
+const _ = require("lodash");
 // helper functions
 const { sleep } = require("./sleep");
 const { findAverage } = require("./arraysorting");
 const { runDistance, getShortestSubarray } = require("./runSorting");
-const {durations, distances} = require("./values")
-
+const { durations, distances } = require("./values");
 
 async function activityLoop(data_set, token) {
   for (element of data_set) {
-  
     if (element["type"] == "Ride" || element["type"] == "VirtualRide") {
-
+      if (element["has_heartrate"] || element["device_watts"]) {
         let watts = await axios.get(
           `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=watts,heartrate&key_by_type=true&resolution=high`,
-          { headers: { Authorization: `${token}` } }
+          { headers: { Authorization: token } }
         );
         if (watts.status == 429) {
           await sleep();
           watts = await axios.get(
             `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=watts,heartrate&key_by_type=true&resolution=high`,
-            { headers: { Authorization: `${token}` } }
+            { headers: { Authorization: token } }
           );
         }
 
@@ -40,23 +38,26 @@ async function activityLoop(data_set, token) {
               }
             }
           }
-         
+
           element["pbs"] = pbs;
         }
+      }
     }
     if (element["type"] == "Run") {
-      let run = await axios.get(
-        `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=high`,
-        { headers: { Authorization: `${token}` } }
-      );
-      if (run.status == 429) {
-        await sleep();
-        run = await axios.get(
+      if (element["has_heartrate"]) {
+        let run = await axios.get(
           `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=high`,
-          { headers: { Authorization: `${token}` } }
+          { headers: { Authorization: token } }
         );
-      }
-      element["run_stream"] = run.data;     
+        if (run.status == 429) {
+          await sleep();
+          run = await axios.get(
+            `https://www.strava.com/api/v3/activities/${element.id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true&resolution=high`,
+            { headers: { Authorization: token } }
+          );
+        }
+     
+      element["run_stream"] = run.data;
       const runpbs = {};
       const runInMetres = runDistance(
         element["run_stream"]["distance"]["data"]
@@ -69,6 +70,7 @@ async function activityLoop(data_set, token) {
 
       element["runpbs"] = runpbs;
     }
+  }
   }
   return data_set;
 }

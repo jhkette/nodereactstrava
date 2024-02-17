@@ -28,6 +28,8 @@ const getAthlete = async (req, res) => {
       headers: { Authorization: token },
     });
 
+    // console.log(response.data, "this is the response from the data")
+
     const foundUserActs = await UserActivities.findOne({
       athlete_id: response.data.id,
     });
@@ -63,7 +65,7 @@ const getLatestActivities = async (req, res) => {
     `https://www.strava.com/api/v3/athlete/activities`,
     {
       headers: { Authorization: token },
-      params: { after: after },
+      params: { after: after},
     }
   );
 
@@ -77,12 +79,12 @@ const getLatestActivities = async (req, res) => {
       }
     );
   }
-
+ console.log("get latest")
   if (response2.data.length == 0) {
     errors["error"] = "no activities found";
     return res.send(errors);
   }
-
+  
   const data_list = [...response2.data];
 
   const { id } = data_list[0].athlete;
@@ -112,10 +114,20 @@ const getLatestActivities = async (req, res) => {
     allActs.runningpbs
   );
   
+  if(cyclingiImprovements["12"]){
+    console.log("improvement")
+  }
+
+  if(cyclingiImprovements["20"]){
+    console.log("improvement")
+  }
+  
   // console.log(cyclingiImprovements, "THIS IS CYCLING IMPROVEMENTS")
   // if(Object.keys(cyclingiImprovements)){
 
   // }
+
+  // check ftp!!!
 
   if (Object.keys(cyclingiImprovements)) {
     for (const key in cyclingiImprovements) {
@@ -170,14 +182,13 @@ const getLatestActivities = async (req, res) => {
 
 const importActivities = async (req, res) => {
   const errors = {};
-  console.log(req.headers.authorization);
-  const token = req.headers.authorization;
+  const token = await req.headers.authorization;
   const userId = req.headers.id;
   if (!token) {
     errors["error"] = "Permission not granted";
-    return res.json(errors);
+    return res.send(errors);
   }
-  // CHECK IF DATA EXISTS !!!!////
+  // // CHECK IF DATA EXISTS !!!!////
 
   // First I am checking if there is data for activities in mongodb
   const foundUserActs = await UserActivities.findOne({ athlete_id: userId });
@@ -212,7 +223,7 @@ const importActivities = async (req, res) => {
       page_num++;
     }
   } catch (err) {
-    return res.status(400).send({ error: err });
+    console.log(err.message)
   }
 
   const data_set = await activityLoop(data_list, token);
@@ -289,6 +300,9 @@ const importActivities = async (req, res) => {
           720: allTime["720"],
           900: allTime["900"],
           1200: allTime["1200"],
+          1800: allTime["1800"],
+          2700: allTime["2700"],
+          3600: allTime["3600"],
         },
         runningpbs: {
           400: runAllTime[400],
@@ -325,6 +339,7 @@ const importActivities = async (req, res) => {
     { new: true }
   );
   console.log(userId);
+  
   return res.send(allUserData);
 };
 
