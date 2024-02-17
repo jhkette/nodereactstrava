@@ -8,8 +8,10 @@ import moment from "moment";
 import ReturnProfile from "./components/profile";
 import AthleteRecords from "./components/AthleteRecords";
 import Linechart from "./linechart";
+import RunChart from './runChart'
 import DoughnutChart from "./doughnut";
 import ActivityList from "./ActivityList";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   const [link, setLink] = useState();
@@ -22,15 +24,18 @@ function App() {
 
   const baseURL = "http://localhost:3000";
   /**
-   * Get athlete use effect hook
+   * This useeffect hook renders every time the pase is rendered
+   * with a 
    */
   useEffect(() => {
     axios
       .get(baseURL + "/auth/link")
       .then((res) => setLink(res.data.link))
+      .then((res) => console.log(res, "these are the header"))
       .catch((err) => {
         setError(err.message);
       });
+      
     setToken(Cookies.get("token"));
   }, []);
   // https://code.tutsplus.com/getting-started-with-chartjs-scales--cms-28477t
@@ -42,8 +47,7 @@ function App() {
     const config = {
       headers: { Authorization: `Bearer ${authToken}` },
     };
-    console.log(config);
-
+    
     const getData = async () => {
       try {
         const userData = await axios.get(baseURL + "/user/athlete", config);
@@ -68,9 +72,11 @@ function App() {
     if (authToken) {
       getData();
     }
-  }, [token]);
+    
+  }, []);
 
   useEffect(() => {
+    
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
@@ -117,6 +123,8 @@ function App() {
    * @returns void
    */
   const importData = async () => {
+    const authToken = Cookies.get("token");
+    console.log(token)
     const config = {
       headers: { Authorization: `Bearer ${token}`, id: athlete.id },
     };
@@ -131,7 +139,13 @@ function App() {
     setUserRecords(userRecordsInfo)
     setUseractivities(response.data.activities);
   };
-
+  
+  /**
+   * function logout
+   * remove token
+   * calls logout function on server
+   * @return void
+   */
   const logout = () => {
     Cookies.remove("token");
     axios.get(baseURL + "/auth/logout");
@@ -139,14 +153,12 @@ function App() {
   };
 
   return (
-    <div className="font-body">
-      <header className="top-0 ... py-4 px-40  w-full border-solid border-b-2 border-slate-200 ">
+    <div className="font-body flex" >
+       <Sidebar/>
+       <div>
+      <header className="top-0 ... py-4 px-40  w-full  bg-slate-100  flex justify-between">
         <h1 className="text-2xl">Strava Dashboard</h1>
-      </header>
-
-      <main className="py-12  bg-slate-100 min-h-screen flex">
-        <div className="px-40">
-          {token ? (
+        {token ? (
             <ReturnProfile athlete={athlete} />
           ) : (
             <p className="py-4">
@@ -154,16 +166,21 @@ function App() {
               your strava data
             </p>
           )}
+      </header>
+     
+      <main className="py-12  bg-slate-100 min-h-screen flex">
+        <div className="px-40">
+         
 
           {token ? (
             <button
-              className="bg-sky-500/100 px-6 py-2 rounded-md"
+              className="bg-teal-600 px-6 py-2 rounded-md"
               onClick={logout}
             >
               logout
             </button>
           ) : (
-            <button className="bg-sky-500/100 px-6 py-2 rounded-md">
+            <button className="bg-teal-600 px-6 py-2 rounded-md">
               <a href={link}>Authorise</a>
             </button>
           )}
@@ -171,7 +188,7 @@ function App() {
           {userActivities.length === 0 &&
             (<>
             <button
-              className="bg-sky-500/100 px-6 py-2 rounded-md"
+              className="bg-teal-600 px-6 py-2 rounded-md"
               onClick={importData}
             >
               import
@@ -181,14 +198,16 @@ function App() {
             </p>
             </>
           )}
-          <Linechart />
+          <Linechart power={userRecords} />
+          <RunChart  data={userRecords}/>
           {userActivities.length && (
           <ActivityList activities={userActivities}/>
           ) }
-          <DoughnutChart />
+          <DoughnutChart hr={userRecords.bikeHrZones} />
           
         </div>
       </main>
+      </div>
     </div>
   );
 }

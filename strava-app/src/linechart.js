@@ -3,7 +3,7 @@ import annotationPlugin from "chartjs-plugin-annotation";
 import "chartjs-adapter-date-fns";
 // import { enUS } from 'date-fns/locale';
 import "chartjs-adapter-moment";
-import moment from "moment";
+
 
 import {
   Chart as ChartJS,
@@ -31,8 +31,16 @@ ChartJS.register(
   Legend
 );
 
-export default function Linechart() {
-const labels = [15, 30, 60, 120, 180, 240, 400, 600];
+export default function Linechart(props) {
+
+  if(!props.power.cyclingpbs){
+    return(
+      <div><p>Please import cycling power files</p></div>
+    )
+  }
+
+  console.log(Object.keys(props.power.cyclingpbs))
+const labels = Object.keys(props.power.cyclingpbs)
 
 
 const floatingLabels = {
@@ -43,7 +51,7 @@ const floatingLabels = {
     // var yAxis = chart.scales.y;
     ctx.save();
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255, 26,104,1)';
+    ctx.fillStyle = '#00897b';
     ctx.font = 'bolder 12px Arial'
     var finalx = x.getPixelForValue('300')
     var finaly = y.getPixelForValue('310')
@@ -57,15 +65,15 @@ const options = {
   plugins: {
     title: {
       display: true,
-      text: "Chart.js Line Chart",
+      text: "Cycling power chart",
     },
     annotation: {
       annotations: {
         line1: {
           type: "line",
-          yMin: 350,
-          yMax: 350,
-          borderColor: "rgb(255, 99, 132)",
+          yMin: props.power.cyclingFTP,
+          yMax: props.power.cyclingFTP,
+          borderColor: "#00897b",
           borderWidth: 2,
           borderDash: [4],
         },
@@ -77,13 +85,24 @@ const options = {
           return tooltipItem.formattedValue + " watts"
         }),
         title: ((tooltipItems, data) => {
+          console.log(tooltipItems[0])
           const tooltipItem = tooltipItems[0];
+          
           if(tooltipItem.label <= 60){
             return tooltipItem.label + " seconds"
           }
-          const seconds = tooltipItem.label % 60
+          // if(tooltipItem.label === '1,200'){
+          //   return '20 mins'
+          // }
+          const commaStrippedLabel = tooltipItem.label.replace(/[, ]+/g, "").trim();
+
+          const seconds = commaStrippedLabel % 60
           
-          return `${(tooltipItem.label - seconds) / 60} mins ${seconds} seconds`
+          if(seconds ===0){
+            return `${(commaStrippedLabel / 60)} mins`
+          }
+          console.log(seconds, "this is seconds in tooltip")
+          return `${(commaStrippedLabel - seconds) / 60} mins ${seconds} seconds`
         })
       }
     }
@@ -138,12 +157,9 @@ const options = {
   datasets: [
     {
       label: "Best power",
-      data: [
-        804, 627, 482, 450, 427, 402, 400, 391, 379, 373, 372, 372, 370, 371,
-        369, 366, 368, 366, 357, 349, 329, 320,
-      ],
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      data: Object.values(props.power.cyclingpbs),
+      borderColor: "#00897b",
+      backgroundColor: "#26a69a",
     },
   ],
 };

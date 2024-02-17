@@ -17,7 +17,8 @@ const authorisation = async (req, res) => {
     errors["error"] = "unable to login";
     return res.status(400).json(errors);
   }
-
+  // console.log(token)
+  console.log(token.access_token)
   res.cookie("token", token.access_token);
   return res.redirect(process.env.ORIGIN);
 };

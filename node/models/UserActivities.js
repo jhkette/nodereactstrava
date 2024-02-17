@@ -131,6 +131,15 @@ const userActivitiesSchema = mongoose.Schema({
     1200: {
       type: Number,
     },
+    1800: {
+      type: Number,
+    },
+    2700:{
+      type: Number,
+    },
+    3600: {
+      type: Number,
+    },
   },
 
   runningpbs: {
@@ -144,6 +153,9 @@ const userActivitiesSchema = mongoose.Schema({
       type: Number,
     },
     2414: {
+      type: Number,
+    },
+    3000: {
       type: Number,
     },
     5000: {

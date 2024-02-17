@@ -7,7 +7,7 @@
 // Function to find the Smallest Subarray with
 // Sum K from an Array
 function getShortestSubarray(A, X) {
-    let ans = Infinity;
+    let ans = Number.MAX_VALUE;
     const n = A.length;
     // Array to store prefix sums
     const prefSum = new Array(n).fill(0);
@@ -33,7 +33,7 @@ function getShortestSubarray(A, X) {
         }
         dq.push(i);
     }
-    return ans === Infinity ? null : ans;
+    return ans === Number.MAX_VALUE ? null : ans;
 }
 
 // let arr = [2, 1, 1, -4, 3, 1, -1, 2];
