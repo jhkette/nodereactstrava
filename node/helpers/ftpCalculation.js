@@ -1,6 +1,6 @@
 function calcFtp (obj) {
 
-  return Math.max( (Number(obj["720"]) * .92), (Number(obj["1200"]) * .95))
+  return Math.round(Math.max( (Number(obj["720"]) * .92), (Number(obj["1200"]) * .95)))
   
 }
 

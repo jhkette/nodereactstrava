@@ -5,21 +5,13 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
 export default function DoughnutChart(props) {
-
-  if(!props.hr){
-    return "please add data"
+  if (!props.hr) {
+    return "please add data";
   }
-  const hr = props.hr
-  console.log(props.hr, "THIS IS DOUGHNUT GRAPH")
-  const nums = [
-    hr.zone1,
-    hr.zone2,
-    hr.zone3,
-    hr.zone4,
-    hr.zone5,
-  ];
+  const hr = props.hr;
+  console.log(props.hr, "THIS IS DOUGHNUT GRAPH");
+  const nums = [hr.zone1, hr.zone2, hr.zone3, hr.zone4, hr.zone5];
   const options = {
     plugins: {
       datalabels: {
@@ -40,19 +32,23 @@ export default function DoughnutChart(props) {
       },
     },
   };
-  
-  
+
   const data = {
     labels: ["Zone 1", "Zone 2", "Zone 3", "Zone 4", "Zone 5"],
     datasets: [
       {
         label: "Heart rate zones",
-        data: [ hr.zone1[1] - hr.zone1[0],  hr.zone2[1] - hr.zone2[0],  hr.zone3[1] - hr.zone3[0], 
-        hr.zone4[1] - hr.zone4[0],  hr.zone5[1] - hr.zone5[0]],
+        data: [
+          hr.zone1[1] - hr.zone1[0],
+          hr.zone2[1] - hr.zone2[0],
+          hr.zone3[1] - hr.zone3[0],
+          hr.zone4[1] - hr.zone4[0],
+          hr.zone5[1] - hr.zone5[0],
+        ],
         backgroundColor: [
           "rgba(222,222,222, 0.3)",
           "rgba(54, 162, 235, 0.2)",
-      
+
           "rgba(75, 192, 192, 0.2)",
           "rgba(278, 206, 86, 0.2)",
           "rgba(230,76,60, 0.4)",
@@ -68,14 +64,6 @@ export default function DoughnutChart(props) {
       },
     ],
   };
-  
-
-
-
-
-
-
-
 
   return <Doughnut data={data} plugins={[ChartDataLabels]} options={options} />;
 }

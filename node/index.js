@@ -31,7 +31,7 @@ app.use(
 
 // call mongoose to connect to mongodb database
 mongoose.connect(process.env.DB_CONNECTOR)
-.then(() => console.log('Connected Successfully'))
+.then(() => console.log('Connected to database successfully'))
 
 app.use(cookieParser());
 

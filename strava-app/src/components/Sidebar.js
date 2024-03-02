@@ -5,25 +5,34 @@ import {
   faCalendar,
   faRunning,
 } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export default function Sidebar() {
   return (
-    <div className="h-auto w-4/12 bg-teal-800">
+    <div className="h-auto w-3/12 bg-green-700">
       <div className="flex flex-col p-12">
-        <div className="flex flex-row justify-start items-center">
-          <FontAwesomeIcon icon={faCalendar} inverse size="2x" />
-          <p className="p-2 text-xl text-white">Home</p>
-        </div>
-        <div className="flex flex-row justify-start items-center">
-          <FontAwesomeIcon icon={faBiking} inverse size="2x" />
+        <div className="flex flex-row justify-start items-center py-2">
+        <div className="w-10">
+          <FontAwesomeIcon icon={faCalendar} inverse size="xl" />
+          </div>
           <p className="p-2 text-xl text-white">
-            Biking
+            
+          <Link to="/"> Home </Link></p>
+        </div>
+        <div className="flex flex-row justify-start items-center py-2">
+          <div className="w-10">
+          <FontAwesomeIcon icon={faBiking} inverse size="xl" />
+          </div>
+          <p className="p-2 text-xl text-white">
+          <Link to="/cycling">  Cycling</Link>
           </p>
         </div>
-        <div className="flex flex-row justify-start items-center">
-          <FontAwesomeIcon icon={faRunning} inverse size="2x" />
+        <div className="flex flex-row justify-start items-center py-2">
+        <div className="w-10">
+          <FontAwesomeIcon icon={faRunning} inverse size="xl" />
+          </div>
           <p className=" p-2 text-xl text-white">
-            Running
+          <Link to="/running"> Running</Link>
           </p>
         </div>
       </div>

@@ -3,7 +3,6 @@ import annotationPlugin from "chartjs-plugin-annotation";
 import "chartjs-adapter-date-fns";
 // import { enUS } from 'date-fns/locale';
 import "chartjs-adapter-moment";
-import moment from "moment";
 import { intervalToDuration } from "date-fns";
 
 import {
@@ -107,6 +106,7 @@ export default function Linechart(props) {
 
             let perKmPaceSeconds = duration["seconds"];
             if (duration["seconds"] < 10) {
+              // add 0 to the string if duration of seconds is less that 10 ie 09 seconds
               perKmPaceSeconds= `0${duration["seconds"]}`;
             }
             return `${duration["minutes"]}:${perKmPaceSeconds} per/km`;
@@ -132,15 +132,6 @@ export default function Linechart(props) {
           font: {
             weight: "bold",
           },
-
-          // callback: (val) => {
-          //   if (val < 60) {
-          //     return val;
-          //   }
-          //   const remainder = val % 60;
-          //   const minutes = (val - remainder) / 60;
-          //   return `${minutes} min`;
-          // },
         },
         title: {
           display: true,
