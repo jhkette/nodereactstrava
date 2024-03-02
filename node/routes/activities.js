@@ -17,6 +17,7 @@ const checkPbs = require("../helpers/checksPbs");
 const { durations, distances } = require("../helpers/values");
 
 const getAthlete = async (req, res) => {
+  console.log('get athlete ran', req.headers.authorization)
   const errors = {};
   const token = req.headers.authorization;
   if (!token) {
@@ -122,7 +123,7 @@ const getLatestActivities = async (req, res) => {
     console.log("improvement")
   }
   
-  // console.log(cyclingiImprovements, "THIS IS CYCLING IMPROVEMENTS")
+  console.log(cyclingiImprovements, "THIS IS CYCLING IMPROVEMENTS")
   // if(Object.keys(cyclingiImprovements)){
 
   // }
@@ -201,12 +202,12 @@ const importActivities = async (req, res) => {
   let page_num = 1;
   const data_list = [];
   try {
-    while (page_num < 3) {
+    while (page_num <= 10) {
       let response = await axios.get(
         `https://www.strava.com/api/v3/athlete/activities`,
         {
           headers: { Authorization: token },
-          params: { per_page: 20, page: page_num },
+          params: { per_page: 30, page: page_num },
         }
       );
       if (response.status == 429) {

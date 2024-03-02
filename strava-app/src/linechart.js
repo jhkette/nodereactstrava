@@ -52,10 +52,10 @@ const floatingLabels = {
     ctx.save();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#00897b';
-    ctx.font = 'bolder 12px Arial'
-    var finalx = x.getPixelForValue('300')
-    var finaly = y.getPixelForValue('310')
-    ctx.fillText('Functional threshold power estimate', finalx, finaly)
+    ctx.font = 'bolder 14px Arial'
+    var finalx = x.getPixelForValue('1800')
+    var finaly = y.getPixelForValue(props.power.cyclingFTP + 50)
+    ctx.fillText(`Functional threshold power estimate ${props.power.cyclingFTP }`, finalx, finaly)
   }
 }
 

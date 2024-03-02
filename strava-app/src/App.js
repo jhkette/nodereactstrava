@@ -1,53 +1,46 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import _ from "lodash"
-import moment from "moment";
+import _ from "lodash";
 
+import {
+  Routes, 
+  Route,
+} from "react-router-dom";
 // components
 import ReturnProfile from "./components/profile";
-import AthleteRecords from "./components/AthleteRecords";
-import Linechart from "./linechart";
-import RunChart from './runChart'
-import DoughnutChart from "./doughnut";
-import ActivityList from "./ActivityList";
 import Sidebar from "./components/Sidebar";
+import Landing from "./Landing";
+import Cycling from "./Cycling";
+import Running from "./Running";
 
 function App() {
   const [link, setLink] = useState();
-  const [error, setError] = useState("");
-  const [token, setToken] = useState("");
+
+  const [token, setToken] = useState(null);
   const [athlete, setAthlete] = useState({});
   const [latest, setLatest] = useState(null);
   const [userActivities, setUseractivities] = useState([]);
   const [userRecords, setUserRecords] = useState({});
 
   const baseURL = "http://localhost:3000";
-  /**
-   * This useeffect hook renders every time the pase is rendered
-   * with a 
-   */
+
   useEffect(() => {
     axios
       .get(baseURL + "/auth/link")
       .then((res) => setLink(res.data.link))
-      .then((res) => console.log(res, "these are the header"))
       .catch((err) => {
-        setError(err.message);
+        console.log(err);
       });
-      
+
     setToken(Cookies.get("token"));
   }, []);
-  // https://code.tutsplus.com/getting-started-with-chartjs-scales--cms-28477t
-  // https://stackoverflow.com/questions/48081521/line-chart-with-x-y-point-data-displays-only-2-values
-  // https://jsfiddle.net/1sxrtcw5/1/
-  //https://stackoverflow.com/questions/37204298/how-can-i-hide-dataset-labels-in-chart-js-v2
+
   useEffect(() => {
-    const authToken = Cookies.get("token");
     const config = {
-      headers: { Authorization: `Bearer ${authToken}` },
+      headers: { Authorization: `Bearer ${token}` },
     };
-    
+
     const getData = async () => {
       try {
         const userData = await axios.get(baseURL + "/user/athlete", config);
@@ -57,8 +50,8 @@ function App() {
         }
         console.log(userData);
         setAthlete(userData.data.profile);
-        const userRecordsInfo =  _.omit(userData.data.user, 'activities')
-        setUserRecords(userRecordsInfo)
+        const userRecordsInfo = _.omit(userData.data.user, "activities");
+        setUserRecords(userRecordsInfo);
         setUseractivities(userData.data.user.activities);
         setLatest(
           userData.data.user.activities[
@@ -69,36 +62,29 @@ function App() {
         console.log(error);
       }
     };
-    if (authToken) {
+    if (token) {
       getData();
     }
-    
-  }, []);
+  }, [token]);
 
   useEffect(() => {
-    
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
     const getLatestData = async () => {
-      console.log("the get latest function ran");
       try {
         console.log("THIS IS THE LATEST THAT IS IMPORTANT!!!", latest);
         const date = Math.floor(Date.parse(latest) / 1000);
-        console.log(date, "this is the date");
         const activities = await axios.get(
           baseURL + `/user/activities/${date}`,
           config
         );
-
         console.log(
           activities,
           "THIS IS THE ACTIVITIES THAT ARE FROM THE DATE"
         );
-
-        //  setUseractivities()
         if (activities.data.error) {
-          console.log(activities.data.error, "THIS IS THE LOGGED ERROR");
+          console.log(activities.data.error);
           return;
         } else {
           console.log(activities.data);
@@ -117,14 +103,12 @@ function App() {
   /**
    * function importData
    * function runs when user logs in for first time
-   * and first set of data is imported. 
-   * setsUserRecords and 
-   * setsUseractivities 
+   * and first set of data is imported.
+   * setsUserRecords and
+   * setsUseractivities
    * @returns void
    */
   const importData = async () => {
-    const authToken = Cookies.get("token");
-    console.log(token)
     const config = {
       headers: { Authorization: `Bearer ${token}`, id: athlete.id },
     };
@@ -135,11 +119,11 @@ function App() {
       console.log(response.data.error);
       return;
     }
-    const userRecordsInfo =  _.omit(response.data, 'activities')
-    setUserRecords(userRecordsInfo)
+    const userRecordsInfo = _.omit(response.data, "activities");
+    setUserRecords(userRecordsInfo);
     setUseractivities(response.data.activities);
   };
-  
+
   /**
    * function logout
    * remove token
@@ -153,12 +137,12 @@ function App() {
   };
 
   return (
-    <div className="font-body flex" >
-       <Sidebar/>
-       <div>
-      <header className="top-0 ... py-4 px-40  w-full  bg-slate-100  flex justify-between">
-        <h1 className="text-2xl">Strava Dashboard</h1>
-        {token ? (
+    <div className="font-body flex">
+      <Sidebar />
+      <div className="h-auto w-9/12">
+        <header className="top-0 ... py-4 px-40   bg-slate-100  flex justify-between">
+          <h1 className="text-2xl">Strava Dashboard</h1>
+          {token ? (
             <ReturnProfile athlete={athlete} />
           ) : (
             <p className="py-4">
@@ -166,47 +150,36 @@ function App() {
               your strava data
             </p>
           )}
-      </header>
-     
-      <main className="py-12  bg-slate-100 min-h-screen flex">
-        <div className="px-40">
+        </header>
+
+        <div>
          
+            <Routes>
+              <Route
+                exact
+                path="/"
+                element={
+                  <Landing
+                    token={token}
+                    logout={logout}
+                    userActivities={userActivities}
+                    importData={importData}
+                    link={link}
+                  />
+                }
+              ></Route>
+              <Route
+                path="/cycling"
+                element={<Cycling userRecords={userRecords} />}
+              ></Route>
 
-          {token ? (
-            <button
-              className="bg-teal-600 px-6 py-2 rounded-md"
-              onClick={logout}
-            >
-              logout
-            </button>
-          ) : (
-            <button className="bg-teal-600 px-6 py-2 rounded-md">
-              <a href={link}>Authorise</a>
-            </button>
-          )}
-
-          {userActivities.length === 0 &&
-            (<>
-            <button
-              className="bg-teal-600 px-6 py-2 rounded-md"
-              onClick={importData}
-            >
-              import
-            </button>
-            <p>If this is your first time logging in - please click import. This will retrieve data from Strava. Future activities
-              will be added automatically.
-            </p>
-            </>
-          )}
-          <Linechart power={userRecords} />
-          <RunChart  data={userRecords}/>
-          {userActivities.length && (
-          <ActivityList activities={userActivities}/>
-          ) }
-          <DoughnutChart hr={userRecords.bikeHrZones} />
-          
+              <Route
+                path="/running"
+                element={<Running userRecords={userRecords} />}
+              ></Route>
+            </Routes>
+       
         </div>
-      </main>
       </div>
     </div>
   );
