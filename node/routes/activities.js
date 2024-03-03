@@ -346,7 +346,7 @@ const importActivities = async (req, res) => {
 
 const router = express.Router();
 
-router.get("/activities/import", importActivities);
+router.get("/activities/all-activities", importActivities);
 // router.get("/activities/all/:actid", getAllActivities);
 router.get("/activities/:after", getLatestActivities);
 

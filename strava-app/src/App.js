@@ -8,7 +8,7 @@ import {
   Route,
 } from "react-router-dom";
 // components
-import ReturnProfile from "./components/profile";
+import ReturnProfile from "./components/UserProfile";
 import Sidebar from "./components/Sidebar";
 import Landing from "./Landing";
 import Cycling from "./Cycling";
@@ -113,7 +113,7 @@ function App() {
       headers: { Authorization: `Bearer ${token}`, id: athlete.id },
     };
 
-    const response = await axios(baseURL + `/user/activities/import`, config);
+    const response = await axios(baseURL + `/user/activities/all-activities`, config);
     console.log(response.data, "msadmskald");
     if (response.data.error) {
       console.log(response.data.error);
@@ -134,26 +134,22 @@ function App() {
     Cookies.remove("token");
     axios.get(baseURL + "/auth/logout");
     window.location.reload();
+    window.location.href = '/'
   };
 
   return (
     <div className="font-body flex">
-      <Sidebar />
-      <div className="h-auto w-9/12">
-        <header className="top-0 ... py-4 px-40   bg-slate-100  flex justify-between">
+      <Sidebar logout={logout} token={token} />
+      <div className="h-auto w-full">
+        <header className="top-0 ... py-4 px-32   bg-slate-100  flex justify-between">
           <h1 className="text-2xl">Strava Dashboard</h1>
-          {token ? (
+          {token && (
             <ReturnProfile athlete={athlete} />
-          ) : (
-            <p className="py-4">
-              Please click the authorise button to allow this application to use
-              your strava data
-            </p>
-          )}
+          ) }
         </header>
 
         <div>
-         
+            {/* App Naviation */}
             <Routes>
               <Route
                 exact
