@@ -1,26 +1,27 @@
 import React from 'react'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRight
+} from "@fortawesome/free-solid-svg-icons";
+import EventCalendar from './components/Calender';
 
-import RunChart from "./runChart";
-
-import ActivityList from "./ActivityList";
 
 
-export default function Landing({token, userRecords, userActivities, link, importData, logout}) {
+export default function Landing({token, userActivities, link, importData}) {
   return (
-    <main className="py-12  bg-slate-100 min-h-screen flex">
-    <div className="px-40">
-      {token ? (
-        <button
-          className="bg-teal-600 px-6 py-2 rounded-md"
-          onClick={() => logout()}
-        >
-          logout
-        </button>
-      ) : (
+    <main className="py-12  bg-slate-100 min-h-screen">
+    <div className="px-32">
+      {!token &&
+        <>
+        <p className="py-4">
+        Please click the authorise button to allow this application to use
+        your strava data
+      </p>
         <button className="bg-teal-600 px-6 py-2 rounded-md">
           <a href={link}>Authorise</a>
         </button>
-      )}
+        </>
+      }
 
       {userActivities.length === 0 && (
         <>
@@ -39,10 +40,12 @@ export default function Landing({token, userRecords, userActivities, link, impor
       )}
       
       {/* <RunChart data={userRecords} /> */}
-      {userActivities.length && (
+      {/* {userActivities.length && (
         <ActivityList activities={userActivities} />
-      )}
-     
+      )} */}
+       {userActivities.length && (
+       <EventCalendar userActivities={userActivities}/>
+       )}
     </div>
   </main>
     
