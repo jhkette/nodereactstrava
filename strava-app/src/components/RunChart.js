@@ -83,7 +83,9 @@ export default function Linechart(props) {
       title: {
         display: true,
         text: "Running pace chart",
+
       },
+      plugins: {
       annotation: {
         annotations: {
           line1: {
@@ -96,6 +98,7 @@ export default function Linechart(props) {
           },
         },
       },
+    },
       tooltip: {
         callbacks: {
           label: (tooltipItem, data) => {

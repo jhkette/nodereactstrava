@@ -138,10 +138,10 @@ function App() {
   };
 
   return (
-    <div className="font-body flex">
+    <div className="font-body flex bg-grey-50">
       <Sidebar logout={logout} token={token} />
       <div className="h-auto w-full">
-        <header className="top-0 ... py-4 px-32   bg-slate-100  flex justify-between">
+        <header className="top-0 ... py-4 px-32 flex justify-between ">
           <h1 className="text-2xl">Strava Dashboard</h1>
           {token && (
             <ReturnProfile athlete={athlete} />

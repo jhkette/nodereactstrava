@@ -9,10 +9,10 @@ import EventCalendar from './components/Calender';
 
 export default function Landing({token, userActivities, link, importData}) {
   return (
-    <main className="py-12  bg-slate-100 min-h-screen">
+    <main className="min-h-screen">
     <div className="px-32">
-      {!token &&
-        <>
+      {!token ?
+        <div>
         <p className="py-4">
         Please click the authorise button to allow this application to use
         your strava data
@@ -20,11 +20,11 @@ export default function Landing({token, userActivities, link, importData}) {
         <button className="bg-teal-600 px-6 py-2 rounded-md">
           <a href={link}>Authorise</a>
         </button>
-        </>
+        </div>  : null
       }
 
-      {userActivities.length === 0 && (
-        <>
+      {token && !userActivities.length ? 
+        <div>
           <button
             className="bg-teal-600 px-6 py-2 rounded-md"
             onClick={()=>importData()}
@@ -36,16 +36,13 @@ export default function Landing({token, userActivities, link, importData}) {
             This will retrieve data from Strava. Future activities will be
             added automatically.
           </p>
-        </>
-      )}
+        </div> : null
+      }
       
-      {/* <RunChart data={userRecords} /> */}
-      {/* {userActivities.length && (
-        <ActivityList activities={userActivities} />
-      )} */}
-       {userActivities.length && (
+     
+       {userActivities.length && 
        <EventCalendar userActivities={userActivities}/>
-       )}
+       }
     </div>
   </main>
     

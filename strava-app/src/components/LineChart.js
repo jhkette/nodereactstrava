@@ -31,7 +31,7 @@ ChartJS.register(
   Legend
 );
 
-export default function Linechart(props) {
+export default function LineChart(props) {
 
   if(!props.power.cyclingpbs){
     return(
@@ -62,6 +62,7 @@ const floatingLabels = {
 
 const options = {
   responsive: true,
+ 
   plugins: {
     title: {
       display: true,
