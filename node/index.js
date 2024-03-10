@@ -8,6 +8,7 @@ const mongoose = require('mongoose')
 
 const authRoutes = require("./routes/auth")
 const activityRoutes = require("./routes/activities")
+const runDataRoutes = require("./routes/datasets")
 
 
 const app = express();
@@ -43,6 +44,8 @@ app.use(bodyParser.json())
 app.use('/auth', authRoutes)
 
 app.use('/user', activityRoutes)
+
+app.use('/data', runDataRoutes)
 
 app.get("/", (req, res) => {
   res.send("Strava app!");

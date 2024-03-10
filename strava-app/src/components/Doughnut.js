@@ -2,12 +2,19 @@ import React from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
+//<FontAwesomeIcon icon="fa-solid fa-spinner" spinPulse />
 export default function DoughnutChart(props) {
   if (!props.hr) {
-    return "please add data";
+    return <FontAwesomeIcon icon={faSpinner} spinPulse />
   }
   const hr = props.hr;
   console.log(props.hr, "THIS IS DOUGHNUT GRAPH");

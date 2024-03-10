@@ -3,6 +3,11 @@ import annotationPlugin from "chartjs-plugin-annotation";
 import "chartjs-adapter-date-fns";
 // import { enUS } from 'date-fns/locale';
 import "chartjs-adapter-moment";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
 
 
 import {
@@ -35,7 +40,7 @@ export default function LineChart(props) {
 
   if(!props.power.cyclingpbs){
     return(
-      <div><p>Please import cycling power files</p></div>
+      <FontAwesomeIcon icon={faSpinner} spinPulse />
     )
   }
 
@@ -51,7 +56,7 @@ const floatingLabels = {
     // var yAxis = chart.scales.y;
     ctx.save();
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#00897b';
+    ctx.fillStyle = '#0c4a6e';
     ctx.font = 'bolder 14px Arial'
     var finalx = x.getPixelForValue('1800')
     var finaly = y.getPixelForValue(props.power.cyclingFTP + 50)
@@ -74,7 +79,7 @@ const options = {
           type: "line",
           yMin: props.power.cyclingFTP,
           yMax: props.power.cyclingFTP,
-          borderColor: "#00897b",
+          borderColor: "#0c4a6e",
           borderWidth: 2,
           borderDash: [4],
         },
@@ -160,7 +165,7 @@ const options = {
       label: "Best power",
       data: Object.values(props.power.cyclingpbs),
       borderColor: "#00897b",
-      backgroundColor: "#26a69a",
+      backgroundColor: "#84cec7",
     },
   ],
 };

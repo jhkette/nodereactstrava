@@ -62,7 +62,7 @@ const getLatestActivities = async (req, res) => {
     return res.send(errors);
   }
 
-  let response2 = await axios.get(
+  let response = await axios.get(
     `https://www.strava.com/api/v3/athlete/activities`,
     {
       headers: { Authorization: token },
@@ -70,9 +70,9 @@ const getLatestActivities = async (req, res) => {
     }
   );
 
-  if (response2.status === 429) {
+  if (response.status === 429) {
     await sleep();
-    response2 = await axios.get(
+    response = await axios.get(
       `https://www.strava.com/api/v3/athlete/activities`,
       {
         headers: { Authorization: token },
@@ -81,12 +81,12 @@ const getLatestActivities = async (req, res) => {
     );
   }
  console.log("get latest")
-  if (response2.data.length == 0) {
+  if (response.data.length == 0) {
     errors["error"] = "no activities found";
     return res.send(errors);
   }
   
-  const data_list = [...response2.data];
+  const data_list = [...response.data];
 
   const { id } = data_list[0].athlete;
   // equality check for latest actviity on mongo vs latest new activity
@@ -241,14 +241,11 @@ const importActivities = async (req, res) => {
   for (duration of durations) {
     let result = bikeActivities.map((activity) => activity.pbs[duration]);
     allTime[duration] = _.max(result);
-
-    console.log(allTime[duration]);
   }
 
   for (distance of distances) {
     
     let result = runActivities.map((activity) => activity.runpbs[distance]);
-    console.log(result)
     runAllTime[distance] = _.min(result);
   }
   
@@ -268,11 +265,11 @@ const importActivities = async (req, res) => {
     element["tss"] = finalTss;
   }
 
-  // const { id } = data_set[0].athlete;
+ 
   /**  the data needs to be reversed - because otherwise the latest activity is first - 
   activities need to be arranged
    * first to last **/
-  console.log(runAllTime[2414])
+  
   data_set.reverse();
   const allUserData = await UserActivities.findOneAndUpdate(
     { athlete_id: userId },
