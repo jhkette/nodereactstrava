@@ -17,6 +17,13 @@ import {
   TimeScale,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+
 
 ChartJS.register(
   CategoryScale,
@@ -35,7 +42,7 @@ export default function Linechart(props) {
   if (!props.data.runningpbs) {
     return (
       <div>
-        <p>Please import cycling power files</p>
+        <p>      <FontAwesomeIcon icon={faSpinner} spinPulse /></p>
       </div>
     );
   }
@@ -92,7 +99,7 @@ export default function Linechart(props) {
             type: "line",
             yMin: 350,
             yMax: 350,
-            borderColor: "rgb(255, 99, 132)",
+            borderColor: "#00897b",
             borderWidth: 2,
             borderDash: [4],
           },
@@ -166,7 +173,7 @@ export default function Linechart(props) {
           },
         },
 
-        beginAtZero: true,
+        beginAtZero: false,
       },
     },
   };
@@ -178,8 +185,8 @@ export default function Linechart(props) {
       {
         label: "Best pace",
         data: finaldata,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: "#00897b",
+        backgroundColor: "#84cec7",
       },
     ],
   };

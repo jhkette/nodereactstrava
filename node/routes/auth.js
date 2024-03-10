@@ -7,7 +7,7 @@ const login = (req, res) => {
 
 const link = (req, res) => {
   const link = client.getAuthorizationUri();
-  return res.json({ link: link });
+  return res.send({ link: link });
 };
 
 const authorisation = async (req, res) => {
@@ -15,7 +15,7 @@ const authorisation = async (req, res) => {
   const token = await client.getToken(req.originalUrl);
   if (!token) {
     errors["error"] = "unable to login";
-    return res.status(400).json(errors);
+    return res.status(400).send(errors);
   }
   // console.log(token)
   console.log(token.access_token)

@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 
 export default function Sidebar({logout, token}) {
   return (
-    <div className="h-auto w-4/12 bg-teal-700">
+    <div className="h-auto w-4/12 bg-sky-900 h-lvh">
       <div className="flex flex-col p-12">
         <div className="flex flex-row justify-start items-center py-2">
         <div className="w-10">

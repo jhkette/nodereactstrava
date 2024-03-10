@@ -54,7 +54,7 @@ export default function EventsCalender({ userActivities }) {
       });
 
       return (
-        <div className="border border-dashed flex flex-col justify-between border-gray-600 p-2 min-h-[150px]">
+        <div className="border border-dashed flex flex-col  bg-sky-100 justify-between border-gray-600 p-2 min-h-[150px]">
           <div className="py-2">
             <p className="font-extrabold">{date.date}</p>
             <p>{eventText}</p>
@@ -65,7 +65,7 @@ export default function EventsCalender({ userActivities }) {
       );
     } else {
       return (
-        <div className="border border-dashed border-gray-600 p-2 min-h-[150px]">
+        <div className="border border-dashed border-gray-600  bg-sky-100 p-2 min-h-[150px]">
           <p className="font-extrabold">{date.date}</p>
         </div>
       );
@@ -75,7 +75,7 @@ export default function EventsCalender({ userActivities }) {
   return (
     <>
     <div className="w-auto inline-block ">
-    <div className="flex flex-col my-4 bg-teal-200  p-4">
+    <div className="flex flex-col mb-4 bg-teal-200  p-4">
         <p className="flex font-bold items-center py-2">Training stress key:   Low <FontAwesomeIcon icon={faArrowRight} size="sm" className="mx-2"/>  High. </p>
         <div className="w-full flex">
         <div className="bg-blue-300 mx-1 h-12 w-12"></div>
