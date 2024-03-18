@@ -12,12 +12,12 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 //<FontAwesomeIcon icon="fa-solid fa-spinner" spinPulse />
-export default function DoughnutChart(props) {
-  if (!props.hr) {
+export default function DoughnutChart({hr}) {
+  if (!hr) {
     return <FontAwesomeIcon icon={faSpinner} spinPulse />
   }
-  const hr = props.hr;
-  console.log(props.hr, "THIS IS DOUGHNUT GRAPH");
+  // const hr = props.hr;
+
   const nums = [hr.zone1, hr.zone2, hr.zone3, hr.zone4, hr.zone5];
   const options = {
     plugins: {

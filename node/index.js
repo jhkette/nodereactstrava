@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const dotenv = require('dotenv').config()
 const mongoose = require('mongoose')
-
+const mongoSanitize = require('express-mongo-sanitize')
 
 const authRoutes = require("./routes/auth")
 const activityRoutes = require("./routes/activities")
@@ -36,6 +36,8 @@ mongoose.connect(process.env.DB_CONNECTOR)
 
 app.use(cookieParser());
 
+app.use(mongoSanitize());
+
 // app.use(express.json());
 
 app.use(bodyParser.json())
@@ -48,9 +50,13 @@ app.use('/user', activityRoutes)
 app.use('/data', runDataRoutes)
 
 app.get("/", (req, res) => {
-  res.send("Strava app!");
+  res.send({success: "Strava app is running succesfully!"});
 });
 
+
+app.use((req, res) => {
+  return res.status(404).json({ error: 'API endpoint not found' });  
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

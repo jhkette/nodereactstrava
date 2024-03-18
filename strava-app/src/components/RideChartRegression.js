@@ -5,7 +5,19 @@ import regression from "regression";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
-export default function RidechartRegression({ regdata }) {
+export default function RidechartRegression({ regdata, userRecords, hill }) {
+
+  function sortedIndex(array, value) {
+    var low = 0,
+        high = array.length;
+
+    while (low < high) {
+        var mid = (low + high) >>> 1;
+        if (array[mid] < value) low = mid + 1;
+        else high = mid;
+    }
+    return low;
+}
   // https://www.youtube.com/watch?v=1b1wC1ksJoI
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
@@ -21,7 +33,7 @@ export default function RidechartRegression({ regdata }) {
       return { x: item[0], y: item[1] };
     });
 
-    expRegression = regression.exponential(regData);
+    expRegression = regression.logarithmic(regData);
     
     prediction = expRegression.predict([5])[1];
 
@@ -49,7 +61,7 @@ export default function RidechartRegression({ regdata }) {
         datasets: [
           {
             type: "line",
-            label: "Linear regression",
+            label: "Logarithmic regression",
             data: sorted.map((data) => data[1]),
             borderColor: "#00897b",
             backgroundColor: "#00897b88",
@@ -59,7 +71,7 @@ export default function RidechartRegression({ regdata }) {
           },
           {
             type: "scatter",
-            label: `5k  dataset`,
+            label: `${regdata[0]["name"]} dataset`,
             data: finalScatter,
             fill: false,
             borderColor: "rgb(54, 162, 235)",
@@ -77,7 +89,7 @@ export default function RidechartRegression({ regdata }) {
         responsive: true,
         plugins: {
           tooltip: {
-            enabled: true, // <-- this option disables tooltips
+            enabled: false, // <-- this option disables tooltips
           },
           // annotation: {
           //   annotations: {
@@ -121,7 +133,7 @@ export default function RidechartRegression({ regdata }) {
           y: {
             title: {
               display: true,
-              text: `Alpe time`,
+              text: `${regdata[0]["name"]} time`,
               font: {
                 weight: "bold",
                 size: 22,
@@ -187,7 +199,7 @@ export default function RidechartRegression({ regdata }) {
   //   return `${hours}:${hoursRemainder}`;
   // };
   return regdata.length ? (
-    <div className="w-8/12  m-auto">
+    <div className="w-10/12 py-18 px-12 bg-white my-8">
       <canvas ref={chartRef} style={{ width: "300px", height: "200px" }} />
       <p>{prediction}</p>
     </div>

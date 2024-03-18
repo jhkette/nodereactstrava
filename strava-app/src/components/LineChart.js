@@ -29,7 +29,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   TimeScale,
- 
+  
   annotationPlugin,
   Title,
   Tooltip,
@@ -44,23 +44,24 @@ export default function LineChart(props) {
     )
   }
 
-  console.log(Object.keys(props.power.cyclingpbs))
+
 const labels = Object.keys(props.power.cyclingpbs)
 
 
 const floatingLabels = {
   id: 'floatingLabels',
   afterDatasetDraw(chart, args, options){
-    const {ctx, scales:{x,y}} = chart
+    const {ctx, chartArea: {top, bottom}, scales:{x,y}} = chart
+
     // var xAxis = chart.scales.x;
     // var yAxis = chart.scales.y;
     ctx.save();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#0c4a6e';
-    ctx.font = 'bolder 14px Arial'
-    var finalx = x.getPixelForValue('1800')
-    var finaly = y.getPixelForValue(props.power.cyclingFTP + 50)
-    ctx.fillText(`Functional threshold power estimate ${props.power.cyclingFTP }`, finalx, finaly)
+    ctx.font = 'bold .8rem Lato'
+    var finalx = x.getPixelForValue('840')
+    var finaly = y.getPixelForValue(props.power.cyclingFTP - 50)
+    ctx.fillText(`Functional threshold power estimate ${props.power.cyclingFTP }`, finalx, finaly )
   }
 }
 
@@ -91,7 +92,7 @@ const options = {
           return tooltipItem.formattedValue + " watts"
         }),
         title: ((tooltipItems, data) => {
-          console.log(tooltipItems[0])
+        
           const tooltipItem = tooltipItems[0];
           
           if(tooltipItem.label <= 60){
@@ -107,7 +108,7 @@ const options = {
           if(seconds ===0){
             return `${(commaStrippedLabel / 60)} mins`
           }
-          console.log(seconds, "this is seconds in tooltip")
+        
           return `${(commaStrippedLabel - seconds) / 60} mins ${seconds} seconds`
         })
       }
@@ -171,5 +172,5 @@ const options = {
 };
 
 
-  return <Line options={options} plugins={[floatingLabels]} data={data}  />;
+  return <Line options={options} plugins={[floatingLabels]} data={data}  className="bg-white p-6"/>;
 }
