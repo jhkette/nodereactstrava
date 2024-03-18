@@ -10,26 +10,28 @@ import Sidebar from "./components/Sidebar";
 import Landing from "./Landing";
 import Cycling from "./Cycling";
 import Running from "./Running";
+import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [link, setLink] = useState();
 
-  const [token, setToken] = useState(null);
+  const [auth, setAuth] = useState(false);
   const [athlete, setAthlete] = useState({});
   const [latest, setLatest] = useState(null);
   const [userActivities, setUseractivities] = useState([]);
   const [userRecords, setUserRecords] = useState({});
-  const [marathon, setMarathon] = useState({})
-  const [half, setHalf] = useState({})
-  const [alpe, setAlpe] = useState({})
+  const [marathon, setMarathon] = useState({});
+  const [half, setHalf] = useState({});
+  const [alpe, setAlpe] = useState({});
+  const [boxHill, setBoxHill] = useState({});
+  const [message, setMessage] = useState("");
 
   const baseURL = "http://localhost:3000";
 
-
   /*
-  * Useffect function runs when page loads,
-  * return the oauth link to authorise strava
-  */
+   * Useffect function runs when page loads,
+   * return the oauth link to authorise strava
+   */
   useEffect(() => {
     axios
       .get(baseURL + "/auth/link")
@@ -38,10 +40,14 @@ function App() {
         console.log(err);
       });
 
-    setToken(Cookies.get("token"));
+   
   }, []);
 
   useEffect(() => {
+    const token = Cookies.get("token")
+    if(token){
+      setAuth(true)
+    }
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
@@ -54,7 +60,7 @@ function App() {
           console.log(userData.data.errors);
           return;
         }
-       
+
         setAthlete(userData.data.profile);
         const userRecordsInfo = _.omit(userData.data.user, "activities");
         setUserRecords(userRecordsInfo);
@@ -63,11 +69,11 @@ function App() {
           userData.data.user.activities[
             userData.data.user.activities.length - 1
           ]["start_date"]
-       
         );
-        setMarathon(dataSet.data.marathon)
-        setHalf(dataSet.data.half)
-        setAlpe(dataSet.data.alpe)
+        setMarathon(dataSet.data.marathon);
+        setHalf(dataSet.data.half);
+        setAlpe(dataSet.data.alpe);
+        setBoxHill(dataSet.data.boxHill);
       } catch (error) {
         console.log(error);
       }
@@ -75,15 +81,15 @@ function App() {
     if (token) {
       getData();
     }
-  }, [token]);
+  }, [auth]);
 
   useEffect(() => {
+    const token = Cookies.get("token")
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
     const getLatestData = async () => {
       try {
-        console.log("THIS IS THE LATEST THAT IS IMPORTANT!!!", latest);
         const date = Math.floor(Date.parse(latest) / 1000);
         const activities = await axios.get(
           baseURL + `/user/activities/${date}`,
@@ -97,18 +103,20 @@ function App() {
           console.log(activities.data.error);
           return;
         } else {
-          console.log(activities.data);
-          setUseractivities((oldArray) => [...oldArray, ...activities.data]);
+          
+          if (activities.data.length) {
+            setUseractivities((oldArray) => [...oldArray, ...activities.data]);
+          }
         }
       } catch (error) {
         console.log(error);
       }
     };
     console.log("the latest use effect ran", latest);
-    if (token !== null && latest && userActivities) {
+    if (auth && latest && userActivities.length) {
       getLatestData();
     }
-  }, [token, latest, userActivities]);
+  }, [auth, latest, userActivities]);
 
   /**
    * function importData
@@ -119,24 +127,31 @@ function App() {
    * @returns void
    */
   const importData = async () => {
+    const token = Cookies.get("token")
+    setMessage(
+      "Please come back and login after an hour - the data will be uploaded by then"
+    );
     const config = {
       headers: { Authorization: `Bearer ${token}`, id: athlete.id },
     };
+    axios(baseURL + `/user/activities/all-activities`, config);
 
-    const response = await axios(
-      baseURL + `/user/activities/all-activities`,
-      config
-    );
-    console.log(response.data, "msadmskald");
-    if (response.data.error) {
-      console.log(response.data.error);
-      return;
-    }
-    const userRecordsInfo = _.omit(response.data, "activities");
-    setUserRecords(userRecordsInfo);
-    setUseractivities(response.data.activities);
+    setTimeout(() => {
+      logout();
+    }, 20000);
   };
-  
+
+  const deauthorize = () => {
+    const token = Cookies.get("token")
+    const config = {
+      headers: { Authorization: `Bearer ${token}`},
+    };
+    axios(baseURL + `/auth/deauthorize`, config);
+    Cookies.remove("token");
+    window.location.href = "/";
+    axios.get(baseURL + "/auth/logout");
+  }
+
   /**
    * function logout
    * remove token
@@ -144,45 +159,73 @@ function App() {
    * @return void
    */
   const logout = () => {
+    setAuth(false)
+    setMessage("");
     Cookies.remove("token");
-    axios.get(baseURL + "/auth/logout");
-    window.location.reload();
     window.location.href = "/";
+    axios.get(baseURL + "/auth/logout");
+
+    // if (window.location.pathname === "/") {
+    //   window.location.reload();
+    // }
+    
   };
 
   return (
-    <div className="font-body flex bg-grey-50">
-      <Sidebar logout={logout} token={token} />
-      <div className="h-auto w-full">
-        <header className="top-0 ... py-4 px-32 flex justify-end ">
-          
-          {token && <ReturnProfile athlete={athlete} />}
-        </header>
+    <div className="font-body flex ">
+      <Sidebar
+        logout={logout}
+        auth={auth}
+        importData={importData}
+        userActivities={userActivities}
+        deauthorize={deauthorize}
+      />
+      <div className="h-auto w-full ">
+        {!!athlete.id && (
+          <header className="top-0 ... pt-4 px-32 flex justify-end ">
+            {faSquareArrowUpRight && <ReturnProfile athlete={athlete} />}
+          </header>
+        )}
 
-        <div>
-          {/* App Naviation */}
+        <div className="bg-grey-50">
+          {/* App Naviation each route shows a different element in the 
+          main block of the page/ ie the cycling page, running page etc*/}
           <Routes>
             <Route
               exact
               path="/"
               element={
                 <Landing
-                  token={token}
+                  auth={auth}
                   logout={logout}
                   userActivities={userActivities}
                   importData={importData}
                   link={link}
+                  message={message}
                 />
               }
             ></Route>
             <Route
               path="/cycling"
-              element={<Cycling userRecords={userRecords} alpedataset={alpe}  />}
+              element={
+                <Cycling
+                  userRecords={userRecords}
+                  ftp={userRecords.cyclingFTP}
+                  alpedataset={alpe}
+                  boxdataset={boxHill}
+                />
+              }
             ></Route>
 
             <Route
               path="/running"
-              element={<Running userRecords={userRecords} mardataset={marathon} halfdataset={half}   />}
+              element={
+                <Running
+                  userRecords={userRecords}
+                  mardataset={marathon}
+                  halfdataset={half}
+                />
+              }
             ></Route>
           </Routes>
         </div>

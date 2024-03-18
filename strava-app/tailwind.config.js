@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        body: ['IBM Plex Sans'],
+        body: ['Lato'],
       },
       extend:{
         colors: {
@@ -26,6 +26,7 @@ module.exports = {
           70: '17.5rem',
           160: '40rem'
         },
+
       }
     },
   },

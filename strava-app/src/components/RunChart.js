@@ -18,12 +18,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  
-  faSpinner
-} from "@fortawesome/free-solid-svg-icons";
-
-
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 ChartJS.register(
   CategoryScale,
@@ -42,11 +37,14 @@ export default function Linechart(props) {
   if (!props.data.runningpbs) {
     return (
       <div>
-        <p>      <FontAwesomeIcon icon={faSpinner} spinPulse /></p>
+        <p>
+          {" "}
+          <FontAwesomeIcon icon={faSpinner} spinPulse />
+        </p>
       </div>
     );
   }
- 
+
   const finaldata = [];
 
   if (props.data.runningpbs) {
@@ -60,52 +58,19 @@ export default function Linechart(props) {
 
       const perkm = 1 / speed;
       finaldata.push(perkm);
-      
     }
   }
   const labels = Object.keys(props.data.runningpbs);
 
-  const floatingLabels = {
-    id: "floatingLabels",
-    afterDatasetDraw(chart, args, options) {
-      const {
-        ctx,
-        scales: { x, y },
-      } = chart;
-      // var xAxis = chart.scales.x;
-      // var yAxis = chart.scales.y;
-      ctx.save();
-      ctx.textAlign = "center";
-      ctx.fillStyle = "rgba(255, 26,104,1)";
-      ctx.font = "bolder 12px Arial";
-      var finalx = x.getPixelForValue("300");
-      var finaly = y.getPixelForValue("310");
-      ctx.fillText("Critical power estimate", finalx, finaly);
-    },
-  };
-
   const options = {
     responsive: true,
     plugins: {
-      title: {
-        display: true,
-        text: "Running pace chart",
-
-      },
       plugins: {
-      annotation: {
-        annotations: {
-          line1: {
-            type: "line",
-            yMin: 350,
-            yMax: 350,
-            borderColor: "#00897b",
-            borderWidth: 2,
-            borderDash: [4],
-          },
+        title: {
+          display: true,
+          text: "Running pace chart",
         },
       },
-    },
       tooltip: {
         callbacks: {
           label: (tooltipItem, data) => {
@@ -114,10 +79,15 @@ export default function Linechart(props) {
               end: tooltipItem.formattedValue * 1000,
             });
 
+            console.log(duration);
+
             let perKmPaceSeconds = duration["seconds"];
+            if (duration["seconds"] === undefined) {
+              return `${duration["minutes"]}:00 per/km`;
+            }
             if (duration["seconds"] < 10) {
               // add 0 to the string if duration of seconds is less that 10 ie 09 seconds
-              perKmPaceSeconds= `0${duration["seconds"]}`;
+              perKmPaceSeconds = `0${duration["seconds"]}`;
             }
             return `${duration["minutes"]}:${perKmPaceSeconds} per/km`;
             // return tooltipItem.formattedValue + " seconds";
@@ -145,7 +115,7 @@ export default function Linechart(props) {
         },
         title: {
           display: true,
-          text: "Distance",
+          text: "Distance in metres",
           font: {
             weight: "bold",
             size: 22,
@@ -155,7 +125,7 @@ export default function Linechart(props) {
       y: {
         title: {
           display: true,
-          text: "Pace",
+          text: "Best pace",
           font: {
             weight: "bold",
             size: 22,
@@ -191,5 +161,5 @@ export default function Linechart(props) {
     ],
   };
 
-  return <Line options={options} plugins={[floatingLabels]} data={data} />;
+  return <Line options={options} data={data} />;
 }

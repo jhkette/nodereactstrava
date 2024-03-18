@@ -1,7 +1,19 @@
 const _ = require("lodash")
 const {quickSort} = require("./arraysorting")
 
-
+/**
+ * 
+ * this function calculates maxhr - it check if 
+ * activities are rides or runs and then removes obvious
+ * outliers. This is an issue as hr monitors can occasionaly
+ * massively misreport numbers.
+ * Thus i've filtered for the activities that were obvsiouly done
+ * at a higher intensity and then removed data 3 standard devivations from the 
+ * mean (if such data exists.)
+ * @param {} performances 
+ * @param {} activityType 
+ * @returns final maxhr int
+ */
 function calcMaxHr(performances, activityType) {
     let hrList;
     if (activityType == "ride") {

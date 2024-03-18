@@ -1,9 +1,9 @@
 import React from "react";
 import RunChart from "./components/RunChart";
 import DoughnutChart from "./components/Doughnut";
-import ScatterPlot from "./components/ScatterRun";
 import RunchartRegression from "./components/RunChartRegression";
 
+// running page with charts 
 export default function Running({ userRecords, mardataset, halfdataset, alpedataset }) {
 
   console.log(mardataset, halfdataset, "THESE ARE THE SETS")
@@ -18,13 +18,13 @@ export default function Running({ userRecords, mardataset, halfdataset, alpedata
 
        </div>
      {/* <ScatterPlot userRecords={userRecords}/> */}
-     {userRecords.runningpbs ?
+     {userRecords.runningpbs &&
      <>
       <RunchartRegression userRecords={userRecords} event={"Half Marathon"}  regdata={halfdataset}/> 
       <RunchartRegression userRecords={userRecords} event={"Marathon"}  regdata={mardataset}/> 
      
       
-      </>: ""
+      </>
      }
     </div>
   );

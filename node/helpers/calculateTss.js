@@ -1,3 +1,4 @@
+
 // TSS = (sec x NP® x IF®)/(FTP x 3600) x 100
 // “sec” is duration of the workout in seconds,
 // “NP” is Normalized Power® (don’t worry about this for now),
@@ -8,6 +9,14 @@
 // average_heartrate
 // weighted_average_watts
 //  moving_time
+/**
+ * Calculates TSS from activity
+ * @param activity {}
+ * @param ftp Int
+ * @param bikeHrZones {}
+ * @param runZones {}
+ * @returns tss float
+ */
 function calculateTss(activity, ftp, bikeHrZones, runZones) {
   // console.log(activity, "activity for tss", bikeHrZones, runZones)
   if (activity["weighted_average_watts"]) {
@@ -25,12 +34,14 @@ function calculateTss(activity, ftp, bikeHrZones, runZones) {
     return 0
   }
   else {
+    // use different zones based on activty
     if (activity["type"] == "Ride" || element["type"] == "VirtualRide") {
       zones = bikeHrZones;
     } else {
       zones = runZones;
     }
-
+    
+  
     // tss score per hour at zones
     const tssScore = {
       1: 30,
@@ -62,7 +73,6 @@ function calculateTss(activity, ftp, bikeHrZones, runZones) {
         default:
           tss = 0
       }
-
     return Math.round(tss);
   }
 

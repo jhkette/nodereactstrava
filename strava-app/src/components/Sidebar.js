@@ -5,49 +5,87 @@ import {
   faCalendar,
   faDoorOpen,
   faRunning,
+  faGear
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-export default function Sidebar({logout, token}) {
+
+
+export default function Sidebar({
+  logout,
+  auth,
+  userActivities,
+  message,
+  importData,
+  deauthorize
+}) {
   return (
-    <div className="h-auto w-4/12 bg-sky-900 h-lvh">
-      <div className="flex flex-col p-12">
-        <div className="flex flex-row justify-start items-center py-2">
-        <div className="w-10">
-          <FontAwesomeIcon icon={faCalendar} inverse size="xl" />
-          </div>
-          <p className="p-2 text-xl text-white">
-            
-          <Link to="/"> Home </Link></p>
-        </div>
-        <div className="flex flex-row justify-start items-center py-2">
+    <div className="h-auto w-4/12 bg-sky-900 min-h-screen shadow-2xl">
+      <nav className="flex flex-col p-12">
+        <div className="flex flex-row justify-start items-center py-2 border-b border-dashed  border-white">
           <div className="w-10">
-          <FontAwesomeIcon icon={faBiking} inverse size="xl" />
+            <FontAwesomeIcon icon={faCalendar} inverse size="xl" />
           </div>
-          <p className="p-2 text-xl text-white">
-          <Link to="/cycling">  Cycling</Link>
+          <p className="p-2 text-lg text-white">
+            <Link to="/"> Home </Link>
           </p>
         </div>
-        <div className="flex flex-row justify-start items-center py-2">
-        <div className="w-10">
-          <FontAwesomeIcon icon={faRunning} inverse size="xl" />
+        {!!userActivities.length && (
+          <div className="flex flex-row justify-start items-center py-2 border-b border-dashed  border-white">
+            <div className="w-10">
+              <FontAwesomeIcon icon={faBiking} inverse size="xl" />
+            </div>
+            <p className="p-2 text-lg text-white">
+              <Link to="/cycling"> Cycling</Link>
+            </p>
           </div>
-          <p className=" p-2 text-xl text-white">
-          <Link to="/running"> Running</Link>
-          </p>
-        </div>
-        {token &&
-        <div className="flex flex-row justify-start items-center py-2">
-        <div className="w-10">
-        <FontAwesomeIcon  icon={faDoorOpen} inverse size="xl" />
+        )}
+        {!!userActivities.length && (
+          <div className="flex flex-row justify-start items-center py-2 border-b border-dashed  border-white">
+            <div className="w-10">
+              <FontAwesomeIcon icon={faRunning} inverse size="xl" />
+            </div>
+            <p className=" p-2 text-lg text-white">
+              <Link to="/running"> Running</Link>
+            </p>
+          </div>
+        )}
+       
+        {auth && (
+          <div className="flex flex-row justify-start items-center py-2 border-b border-dashed  border-white">
+            <div className="w-10">
+              <FontAwesomeIcon icon={faDoorOpen} inverse size="xl" />
+            </div>
+            <p
+              className=" p-2 text-lg text-white cursor-pointer"
+              onClick={logout}
+            >
+              Logout
+            </p>
+          </div>
+
+          
+        )}
          
+        {auth && !userActivities.length ? (
+          <div className="flex flex-row justify-start items-center py-16">
+            <div className="w-10"></div>
+            <div>
+              <button
+                className="bg-white px-6 py-2 rounded-md"
+                onClick={importData}
+              >
+                {message ? "importing" : "import"}
+              </button>
+              <p className="p-6 my-6 text-white bg-red-600  font-semibold">
+                If this is your first time logging in - please click import.
+                This will retrieve data from Strava. Your future activities will
+                then be added automatically.
+              </p>
+            </div>
           </div>
-          <p className=" p-2 text-xl text-white cursor-pointer" onClick={logout}>
-          Logout
-          </p>
-        </div>
-        }
-      </div>
+        ) : null}
+      </nav>
     </div>
   );
 }

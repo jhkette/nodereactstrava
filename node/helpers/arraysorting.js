@@ -1,9 +1,8 @@
 const _ = require("lodash");
 
-
 // https://sunjetliu.medium.com/algorithm-practice-find-averages-of-subarrays-db9108c0d55e
 function findAverage(K, arr) {
-  // if K is bigger than array length return null 
+  // if K is bigger than array length return null
   if (K > arr.length) {
     return null;
   }
@@ -13,7 +12,7 @@ function findAverage(K, arr) {
     windowStart = 0;
   for (let windowEnd = 0; windowEnd < arr.length; windowEnd++) {
     windowSum += arr[windowEnd]; // add the next element
-    if (windowEnd >= K - 1) {
+    if (windowEnd >= K - 1) { // if windowend = k-1 ie the length we are looking for
       result.push(windowSum / K);
       windowSum -= arr[windowStart];
       windowStart += 1;
@@ -21,6 +20,13 @@ function findAverage(K, arr) {
   }
   return result;
 }
+
+/**
+ * quicksort function  sorts a list using
+ * quick sort algorithm
+ * @param items[]
+ * @returns []
+ */
 
 function quickSort(items) {
   // terminate execution and return array if empty
@@ -48,8 +54,4 @@ function quickSort(items) {
   return [...quickSort(leftItems), pivot, ...quickSort(rightItems)];
 }
 
-
-
-
-
-module.exports = { findAverage,  quickSort };
+module.exports = { findAverage, quickSort };

@@ -7,7 +7,7 @@
 // Function to find the Smallest Subarray with
 // Sum K from an Array
 function getShortestSubarray(A, X) {
-    let ans = Number.MAX_VALUE;
+    let ans = Number.MAX_VALUE; // 
     const n = A.length;
     // Array to store prefix sums
     const prefSum = new Array(n).fill(0);
@@ -50,7 +50,9 @@ function runDistance(numbers){
     // map returns a new value for each of those, and the value 
     //returned is the difference between the element and the corresponding 
     // element in A
+
     const distances = numbers.slice(1).map((v, i) => (v - numbers[i]).toFixed(1)).map(Number);
+    console.log(distances)
     return distances
   }
 

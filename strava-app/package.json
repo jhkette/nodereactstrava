@@ -19,7 +19,6 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "classnames": "^2.5.1",
     "date-fns": "^3.3.1",
-    "express-session": "^1.17.3",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
