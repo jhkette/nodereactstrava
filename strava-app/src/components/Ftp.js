@@ -43,43 +43,43 @@ export default function DoughnutChart({ ftp }) {
     <table class="border-collapse table-fixed w-full text-sm">
       <thead>
       <tr className="shadow-xl">
-        <th class="border-b border-slate-600 text-base pl-4  pb-4 text-left">Zone</th>
-        <th class="border-b border-slate-600  text-base pb-4 pl-4   text-left">Watts</th>
+        <th class="border-b border-slate-600  pl-4  pb-4 text-left">Zone</th>
+        <th class="border-b border-slate-600   pb-4 pl-4   text-left">Watts</th>
     
       </tr>
     </thead>
     <tbody>
-      <tr  className="text-base pl-8 h-12 text-left bg-slate-300">
+      <tr  className=" pl-8 h-12 text-left bg-slate-300">
         <th className="pl-4">Zone 1: Active Recovery</th>
         <th className="pl-4">{'<'} {ftpzones.zone1[1]}</th>
       
       </tr>
-      <tr className="text-base h-12 text-left bg-blue-200">
+      <tr className=" h-12 text-left bg-blue-200">
         <th className="pl-4">Zone 2: Endurance</th>
         <th className="pl-4">{ftpzones.zone2[0]} - {ftpzones.zone2[1]}</th>
       
       </tr >
-      <tr className="text-base h-12 text-left bg-green-200">
+      <tr className=" h-12 text-left bg-green-200">
         <th className="pl-4">Zone 3: Tempo</th>
         <th className="pl-4">{ftpzones.zone3[0]} - {ftpzones.zone3[1]}</th>
       
       </tr>
-      <tr className="text-base h-12 text-left bg-green-300">
+      <tr className=" h-12 text-left bg-green-300">
         <th className="pl-4">Zone 4: Sweet Spot</th>
         <th className="pl-4">{ftpzones.zone4[0]} - {ftpzones.zone4[1]}</th>
  
       </tr>
-      <tr className="text-base h-12 text-left bg-yellow-200">
+      <tr className=" h-12 text-left bg-yellow-200">
         <th className="pl-4">Zone 5: Threshold</th>
         <th className="pl-4">{ftpzones.zone5[0]} - {ftpzones.zone5[1]}</th>
         
       </tr>
-      <tr className="text-base h-12 text-left bg-red-200">
+      <tr className=" h-12 text-left bg-red-200">
         <th className="pl-4">Zone 6: VO2 Max</th>
         <th className="pl-4">{ftpzones.zone6[0]} - {ftpzones.zone6[1]}</th>
     
       </tr>
-      <tr className="text-base h-12 text-left bg-red-300">
+      <tr className=" h-12 text-left bg-red-300">
         <th className="pl-4"> Zone 7: Anaerobic</th>
         <th className="pl-4"> {'>'} {ftpzones.zone7[0]}</th>
    

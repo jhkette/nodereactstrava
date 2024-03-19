@@ -4,7 +4,7 @@ import DoughnutChart from "./components/Doughnut";
 import RidechartRegression from "./components/RideChartRegression";
 import Ftp from "./components/Ftp"
 
-export default function Cycling({ userRecords, alpedataset,  boxdataset, ftp }) {
+export default function Cycling({ userRecords, alpedataset,  boxdataset, ftp, weight }) {
  
  console.log(ftp, "THIS IS FTP")
   return (
@@ -18,44 +18,60 @@ export default function Cycling({ userRecords, alpedataset,  boxdataset, ftp }) 
         from other time periods  </p>
      
       <h2 className="text-2xl font-bold py-8">Predicting your climbing</h2>
-      <div className="flex">
-      
-      <RidechartRegression regdata={alpedataset} userRecords={userRecords} />
-      
-      <div className="italic w-5/12 py-18 py-12 text-lg">
+      <section className="w-full py-12 px-6">
+     
+      <RidechartRegression regdata={alpedataset} userRecords={userRecords}  weight={weight} ftp={ftp}   />
+      <div className="flex flex-wrap w-full py-18 px-12 justify-between">
+      <div className=" w-5/12 py-12">
+     
+      </div>
+      <div className="italic w-7/12 py-8 pl-8 text-lg">
         This is a dataset from Zwift an online cycling platform. While it is online, the game physics reflect real life and climbing ability
         on the Zwift platform would reflect real life climbing ability. Similarly, it is a good dataset to use to predict climbing ability
         as there is a relatively large sample size with a large range of abilities. It also has accurate data provided by the platform. 
         Your time and position in this dataset should give you a good idea of your ability.
 
 
-      </div>
-      </div>
+        </div>
+        </div>
+      </section>
 
-      <div className="flex">
-      
-      <RidechartRegression regdata={boxdataset} userRecords={userRecords}  />
-      
-      <div className="italic w-5/12 py-18 py-8 pl-8 text-lg">
-        This is a dataset from Zwift an online cycling platform. While it is online, the game physics reflect real life and climbing ability
+      <section className="w-full py-12 px-16">
+      <RidechartRegression regdata={boxdataset} userRecords={userRecords} weight={weight} ftp={ftp} />
+      <div className="flex flex-wrap w-full py-18 px-12 justify-between">
+      <div className=" w-7/12 py-12">
+     
+      </div>
+      <div className="italic w-5/12 py-8 pl-8 text-lg">
+       <p> This is a dataset from Zwift an online cycling platform. While it is online, the game physics reflect real life and climbing ability
         on the Zwift platform would reflect real life climbing ability. Similarly, it is a good dataset to use to predict climbing ability
         as there is a relatively large sample size with a large range of abilities. It also has accurate data provided by the platform. 
-        Your time and position in this dataset should give you a good idea of your ability.
+        Your time and position in this dataset should give you a good idea of your ability. </p>
 
 
       </div>
       </div>
+      </section>
        
-      
+      <section className="flex flex-wrap w-full py-18 px-12 justify-between" >
       <div className="w-5/12 py-12">
       <h2 className="text-2xl font-bold pb-8">Training - heart rate</h2>
       <DoughnutChart hr={userRecords.bikeHrZones} />
       </div>
+      <div className="w-6/12  py-12">
 
+      </div>
+      </section>
+      <section className="flex flex-wrap w-full py-18 px-12 justify-between">
       <div className="w-6/12  py-12">
       <h2 className="text-2xl font-bold pb-8">Training - heart rate</h2>
       <Ftp ftp={ftp} />
       </div>
+      <div className="w-6/12  py-12">
+
+      </div>
+      </section>
+     
     </section>
   );
 }

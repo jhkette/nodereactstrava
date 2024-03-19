@@ -16,7 +16,8 @@ export default function Landing({ auth, userActivities, link, message }) {
           <p className="py-4 font-bold text-xl ">
              Please click authorise. For this app to work best you should upload a mixture of
              running and cycling. Ideally, you should upload at least one 10k run and some hard cycling
-             efforts, with a power meter, of between 12 and 20 minutes. 
+             efforts, with a power meter, of between 12 and 20 minutes. Also ensure you have a weight attached to your profile.
+             It is under Settings {'>'} My Profile in strava. 
              
             </p>
             
@@ -31,7 +32,7 @@ export default function Landing({ auth, userActivities, link, message }) {
           </main>
         )}
           {!!message && 
-        <div className="border border-dashed flex flex-col  bg-sky-100 justify-between border-gray-600 p-2 min-h-[250px]">
+        <div className="border border-dashed flex flex-col  opacity-70 rounded-md bg-blue-100 justify-between border-gray-600 p-2 min-h-[250px]">
          <p className="font-extrabold"> {message}</p>
         </div> }
         {!!userActivities.length && (

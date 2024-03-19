@@ -43,6 +43,9 @@ function App() {
    
   }, []);
 
+  // useffect function - gets the main athlete data from /user/athlete/
+  // and the datasets from /data/datasets. Then sets the state variables
+  // with response. 
   useEffect(() => {
     const token = Cookies.get("token")
     if(token){
@@ -60,8 +63,9 @@ function App() {
           console.log(userData.data.errors);
           return;
         }
-
+        // set the state values with response
         setAthlete(userData.data.profile);
+      
         const userRecordsInfo = _.omit(userData.data.user, "activities");
         setUserRecords(userRecordsInfo);
         setUseractivities(userData.data.user.activities);
@@ -78,11 +82,18 @@ function App() {
         console.log(error);
       }
     };
+    // only call the get data function 
+    // if there is a token - avoid axios error
     if (token) {
       getData();
     }
-  }, [auth]);
-
+  }, []);  
+  /**
+   * useffect data 
+   * get the latest data from strava api
+   * call the api with the date of last activity in app state.
+   * get all events recorded after that. 
+   */
   useEffect(() => {
     const token = Cookies.get("token")
     const config = {
@@ -90,6 +101,7 @@ function App() {
     };
     const getLatestData = async () => {
       try {
+        // date is a unix timestamp - just modifying so it works with strava api
         const date = Math.floor(Date.parse(latest) / 1000);
         const activities = await axios.get(
           baseURL + `/user/activities/${date}`,
@@ -141,17 +153,7 @@ function App() {
     }, 20000);
   };
 
-  const deauthorize = () => {
-    const token = Cookies.get("token")
-    const config = {
-      headers: { Authorization: `Bearer ${token}`},
-    };
-    axios(baseURL + `/auth/deauthorize`, config);
-    Cookies.remove("token");
-    window.location.href = "/";
-    axios.get(baseURL + "/auth/logout");
-  }
-
+ 
   /**
    * function logout
    * remove token
@@ -162,14 +164,22 @@ function App() {
     setAuth(false)
     setMessage("");
     Cookies.remove("token");
-    window.location.href = "/";
+   
     axios.get(baseURL + "/auth/logout");
-
-    // if (window.location.pathname === "/") {
-    //   window.location.reload();
-    // }
+    window.location.href = "/";
+    if (window.location.pathname === "/") {
+      window.location.reload();
+    }
     
   };
+
+  // define weight variable for cycling page
+  let weight
+  if(athlete.weight === undefined){
+    weight = 75;
+  }else{
+    weight = athlete.weight
+  }
 
   return (
     <div className="font-body flex ">
@@ -178,7 +188,7 @@ function App() {
         auth={auth}
         importData={importData}
         userActivities={userActivities}
-        deauthorize={deauthorize}
+       
       />
       <div className="h-auto w-full ">
         {!!athlete.id && (
@@ -213,6 +223,7 @@ function App() {
                   ftp={userRecords.cyclingFTP}
                   alpedataset={alpe}
                   boxdataset={boxHill}
+                  weight={weight}
                 />
               }
             ></Route>
