@@ -1,12 +1,11 @@
 import { subMonths, eachDayOfInterval, format } from "date-fns";
+import { v4 as uuidv4 } from 'uuid';
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faDumbbell, faHeart } from "@fortawesome/free-solid-svg-icons";
 
 import {
   faBiking,
-  faCalendar,
-  faDoorOpen,
   faRunning,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -22,7 +21,7 @@ export default function EventsCalender({ userActivities }) {
     start: currentDate,
     end: pastDate,
   });
-  // This is essentially a hash table that stores the dates
+  // This is an object that stores the dates
   const allDates = interval.map((date) => {
     // create an array of objects with this array with date, event, and tss keys
     return {
@@ -56,7 +55,7 @@ export default function EventsCalender({ userActivities }) {
       }
     }
   }
-
+   // create the the html for the main calender
   const finalHtml = allDates.map((date) => {
     let classes = classNames({
       "bg-blue-300 h-12 w-auto": date.tss <= 25,
@@ -68,17 +67,18 @@ export default function EventsCalender({ userActivities }) {
       "bg-red-600 h-12  w-auto": date.tss > 200,
     });
      const sports = ["VirtualRide", "Ride", "Run", "WeightTraining" ]
-    if (date.events.length) {
-      let eventText = date.events.map((eventArr) => {
-        if (eventArr.length < 2) {
-          return (
-            <div>
-              <p className="font-semibold py-2">{eventArr[0]}</p>{" "}
-            </div>
-          );
-        }
+    if (date.events.length) { // if the date has events on it - created in object earlier
+      let eventText = date.events.map((eventArr) => { // looping through events using map
+        // if (eventArr.length < 2) {
+        //   return (
+        //     <div key={}>
+        //       <p className="font-semibold py-2">{eventArr[0]}</p>{" "}
+        //     </div>
+        //   );
+        // }
         return (
-          <div>
+          // this is the event text - that displays event info
+          <div key={uuidv4()}>
             <p className="font-semibold"> 
             {(eventArr[0] === 'VirtualRide' || eventArr[0] === 'Ride' ) &&  <FontAwesomeIcon icon={faBiking} size="sm"  className="pr-2"/> } 
             {(eventArr[0] === "Run") &&   <FontAwesomeIcon icon={faRunning} size="sm"  className="pr-2"/>} 
@@ -92,18 +92,19 @@ export default function EventsCalender({ userActivities }) {
       });
 
       return (
-        <div className=" flex flex-col  bg-gray-200 justify-between  p-2 min-h-[150px]">
+        // the event text is then added to the day div wih the date
+        <div key={uuidv4()} className=" flex flex-col  bg-gray-200 justify-between  p-2 min-h-[150px]">
           <div className="py-2">
             <p className="font-semibold">{date.date}</p>
-            <p>{eventText}</p>
+            <p>{eventText}</p>  
             <p className="font-semibold">Total Training stress:{date.tss}</p>
           </div>
           <div className={classes}></div>
         </div>
       );
     } else {
-      return (
-        <div className="p-2 bg-gray-200 p-2 min-h-[150px]">
+      return ( // if there are no events on the data - just add text with rest day
+        <div key={uuidv4()} className="p-2 bg-gray-200 p-2 min-h-[150px]">
           <p className="font-semibold py-2">{date.date}</p>
           <p className="font-semibold py-2">Rest day</p>
         </div>

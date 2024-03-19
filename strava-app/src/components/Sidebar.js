@@ -5,7 +5,7 @@ import {
   faCalendar,
   faDoorOpen,
   faRunning,
-  faGear
+ 
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
@@ -17,7 +17,7 @@ export default function Sidebar({
   userActivities,
   message,
   importData,
-  deauthorize
+
 }) {
   return (
     <div className="h-auto w-4/12 bg-sky-900 min-h-screen shadow-2xl">
