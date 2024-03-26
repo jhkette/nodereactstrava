@@ -8,7 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    // the app is wrapped  in the auth context and thr router for navigation
+    // the app is wrapped  in the auth context and the router for navigation
   <AuthProvider>
     <BrowserRouter>
       <App />

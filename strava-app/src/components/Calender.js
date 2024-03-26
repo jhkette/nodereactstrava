@@ -121,15 +121,18 @@ export default function EventsCalender({ userActivities }) {
 
   return (
     <>
+     <div className="flex flex-row mb-8  items-end justify-between">
+        <h1 className="text-xl2">Training Calender</h1>
       <div className="w-auto inline-block ">
-      <h1>Training Calender</h1>
-        <div className="flex flex-col mb-4 bg-gray-200  p-4">
-          
+      
+        <div className="flex flex-col  p-2">
+       
           <p className="flex font-bold items-center py-2">
             Training stress key: Low{" "}
             <FontAwesomeIcon icon={faArrowRight} size="sm" className="mx-2" />{" "}
             High.{" "}
           </p>
+          </div>
           <div className="w-full flex">
             <div className="bg-blue-300 mx-1 h-12 w-12"></div>
             <div className="bg-yellow-200 mx-1 h-12 w-12"></div>
@@ -141,6 +144,7 @@ export default function EventsCalender({ userActivities }) {
           </div>
         </div>
       </div>
+      
       <div className="grid grid-cols-4 gap-3 text-sm w-full">{finalHtml}</div>
     </>
   );
