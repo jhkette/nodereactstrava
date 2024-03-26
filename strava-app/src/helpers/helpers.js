@@ -25,14 +25,17 @@ export function quickSort(items) {
 }
 
 
-
+/**
+ * Binary search - used to find index of prediction 
+ * 
+ * */
 
 export function sortedIndex(array, value) {
-    var low = 0,
-      high = array.length;
+    let low = 0;
+     let high = array.length;
 
     while (low < high) {
-      var mid = Math.floor((low + high)/2);
+      let mid = Math.floor((low + high)/2);
       if (array[mid] < value) low = mid + 1;
       else high = mid;
     }

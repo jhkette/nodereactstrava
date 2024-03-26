@@ -181,7 +181,7 @@ exports.importActivities = async (req, res) => {
   let page_num = 1;
   const data_list = [];
   try {
-    while (page_num <= 3) {
+    while (page_num <= 10) {
       if (page_num % 2 === 0) {
         // await sleep();
       }
@@ -189,7 +189,7 @@ exports.importActivities = async (req, res) => {
         `https://www.strava.com/api/v3/athlete/activities`,
         {
           headers: { Authorization: token },
-          params: { per_page: 25, page: page_num },
+          params: { per_page: 30, page: page_num },
         }
       );
 

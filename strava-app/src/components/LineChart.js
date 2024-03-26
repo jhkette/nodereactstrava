@@ -58,7 +58,7 @@ const floatingLabels = {
     ctx.save();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#0c4a6e';
-    ctx.font = 'bold .8rem Lato'
+    ctx.font = 'bold .95rem Lato'
     var finalx = x.getPixelForValue('840')
     var finaly = y.getPixelForValue(props.power.cyclingFTP - 50)
     ctx.fillText(`Functional threshold power estimate ${props.power.cyclingFTP }`, finalx, finaly )
@@ -122,7 +122,8 @@ const options = {
         stepSize: 60,
         color: "#1a1a1a",
         font: {
-          weight: "bold",
+        
+          familt: "lato"
         },
        
         callback: (val) => {
@@ -139,6 +140,7 @@ const options = {
         text: "Time",
         font: {
           weight: "bold",
+          family: "lato",
           size: 22,
         },
       },
@@ -149,8 +151,14 @@ const options = {
         text: "Power in watts",
         font: {
           weight: "bold",
+          family: "lato",
           size: 22,
         },
+      },
+      ticks: {
+        font:{
+          family: "lato"
+        }
       },
   
       beginAtZero: true,

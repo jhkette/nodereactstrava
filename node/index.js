@@ -23,8 +23,6 @@ app.use(
   cors({
     credentials: true,
       // credentials: true, // allows cookies to be sent to client
-      origin: process.env.ORIGIN, // from this url (ie the client)- saved in the dotenv file
-      // optionsSuccessStatus: 200, // 
   })
 );
 
@@ -43,13 +41,13 @@ app.use(mongoSanitize());
 app.use(bodyParser.json())
 
 
-app.use('/auth', authRoutes)
+app.use('/api/auth', authRoutes)
 
-app.use('/user', activityRoutes)
+app.use('/api/user', activityRoutes)
 
-app.use('/data', runDataRoutes)
+app.use('/api/data', runDataRoutes)
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send({success: "Strava app is running succesfully!"});
 });
 

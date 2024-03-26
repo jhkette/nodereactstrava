@@ -4,7 +4,7 @@ const activitiesController = require("../controllers/activities")
 
 const router = express.Router();
 
-router.get("/activities/all-activities", activitiesController.importActivities);
+router.get("/activities/activities-list", activitiesController.importActivities);
 
 router.get("/activities/:after", activitiesController.getLatestActivities);
 

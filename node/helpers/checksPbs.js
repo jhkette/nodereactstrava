@@ -12,7 +12,7 @@ function checkPbs(dataSet, cyclingAllTime, runAllTime) {
   let updateFlagCycling = false;
   let updateFlagRunning = false;
   let ftpChange = false;
-  let criticalChange = false;
+
 
   for (activity of dataSet) {
     console.log(activity["type"])
@@ -40,9 +40,10 @@ function checkPbs(dataSet, cyclingAllTime, runAllTime) {
 
           console.log(runAllTime[distance], updateFlagRunning, "THIS IS PBS" )
         }
+        // here is am checking if the there isn't a 'runalltime' record at all for this distance
         if ((activity["runpbs"][distance] != false) && (runAllTime[distance] == false)) {
           updateFlagRunning = true;
-          runAllTime[duration] = activity["runpbs"][distance];
+          runAllTime[duration] = activity["runpbs"][distance]; // if there isn't - and the activity includes this distance add it
          
           console.log(runAllTime[duration], updateFlagRunning, "THIS IS PBS" )
         }

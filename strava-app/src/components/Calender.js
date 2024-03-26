@@ -43,19 +43,26 @@ export default function EventsCalender({ userActivities }) {
     let dateFound = allDates.find((obj) => obj.date === formattedDate);
     if (dateFound) {
      
-      if (activity["average_heartrate"]) {
+      if (activity["average_heartrate"]) { // for all actvities with heart rate
         dateFound.events.push([
           activity.sport_type,
           activity.average_heartrate,
           activity.tss,
         ]);
         dateFound.tss += activity.tss;
-      } else {
+      } else if(activity["average_watts"]){ // if power meter but no heart rate
+        dateFound.events.push([
+          activity.sport_type,
+          activity.tss,
+        ])
+      } 
+      
+      else {  // eveything else
         dateFound.events.push([activity.sport_type]);
       }
     }
   }
-   // create the the html for the main calender
+   // creates the the html for the main calender
   const finalHtml = allDates.map((date) => {
     let classes = classNames({
       "bg-blue-300 h-12 w-auto": date.tss <= 25,
@@ -69,13 +76,13 @@ export default function EventsCalender({ userActivities }) {
      const sports = ["VirtualRide", "Ride", "Run", "WeightTraining" ]
     if (date.events.length) { // if the date has events on it - created in object earlier
       let eventText = date.events.map((eventArr) => { // looping through events using map
-        // if (eventArr.length < 2) {
-        //   return (
-        //     <div key={}>
-        //       <p className="font-semibold py-2">{eventArr[0]}</p>{" "}
-        //     </div>
-        //   );
-        // }
+        if (eventArr.length === 1) { // if the only thing we have is an event name
+          return (
+            <div key={uuidv4()}>
+              <p className="font-semibold py-2">{eventArr[0]}</p>{" "}
+            </div>
+          );
+        }
         return (
           // this is the event text - that displays event info
           <div key={uuidv4()}>
@@ -115,7 +122,9 @@ export default function EventsCalender({ userActivities }) {
   return (
     <>
       <div className="w-auto inline-block ">
+      <h1>Training Calender</h1>
         <div className="flex flex-col mb-4 bg-gray-200  p-4">
+          
           <p className="flex font-bold items-center py-2">
             Training stress key: Low{" "}
             <FontAwesomeIcon icon={faArrowRight} size="sm" className="mx-2" />{" "}

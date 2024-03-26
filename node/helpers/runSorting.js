@@ -52,7 +52,7 @@ function runDistance(numbers){
     // element in A
 
     const distances = numbers.slice(1).map((v, i) => (v - numbers[i]).toFixed(1)).map(Number);
-    console.log(distances)
+   
     return distances
   }
 
