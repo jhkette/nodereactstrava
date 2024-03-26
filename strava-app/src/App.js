@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import _ from "lodash";
-
+import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
 import { Routes, Route } from "react-router-dom";
 // context
 import { useAuth } from "./context/AuthContext";
@@ -14,7 +14,7 @@ import Cycling from "./Cycling";
 import Running from "./Running";
 import ProtectedRoute from "./protectRoute";
 
-import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
+
 
 function App() {
   const [link, setLink] = useState();
@@ -30,7 +30,7 @@ function App() {
   const [boxHill, setBoxHill] = useState({});
   const [message, setMessage] = useState("");
 
-  const baseURL = "http://localhost:3000/api";
+  const baseURL = process.env.REACT_APP_SERVER;
    
 
   // impprt react context auth - this gives access to global auth state

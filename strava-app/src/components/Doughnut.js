@@ -72,5 +72,5 @@ export default function DoughnutChart({hr}) {
     ],
   };
 
-  return <Doughnut data={data} plugins={[ChartDataLabels]} options={options} />;
+  return <Doughnut data={data} plugins={[ChartDataLabels]} options={options} className="bg-white p-8" />;
 }

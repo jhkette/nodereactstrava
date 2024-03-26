@@ -40,7 +40,8 @@ export default function DoughnutChart({ ftp }) {
 
 
   return (
-    <table class="border-collapse table-fixed w-full text-sm">
+    <div className="bg-white p-4">
+    <table class="border-collapse table-fixed w-full text-sm ">
       <thead>
       <tr className="shadow-xl">
         <th class="border-b border-slate-600  pl-4  pb-4 text-left">Zone</th>
@@ -86,5 +87,6 @@ export default function DoughnutChart({ ftp }) {
       </tr>
       </tbody>
     </table>
+    </div>
   );
 }
