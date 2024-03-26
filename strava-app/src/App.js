@@ -30,7 +30,7 @@ function App() {
   const [boxHill, setBoxHill] = useState({});
   const [message, setMessage] = useState("");
 
-  const baseURL = process.env.REACT_APP_SERVER;
+  const baseURL = "http://localhost:3000/api";
    
 
   // impprt react context auth - this gives access to global auth state
