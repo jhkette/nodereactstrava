@@ -22,15 +22,7 @@ const userActivitiesSchema = mongoose.Schema({
   cyclingFTP: {
     type: Number,
   },
-  criticalPace:{
-    type: Number,
-  },
-  cyclingV02:{
-    type: Number,
-  },
-  runningV02:{
-    type: Number,
-  },
+ 
   bikeHrZones: {
     zone1: {
       type: [Number],

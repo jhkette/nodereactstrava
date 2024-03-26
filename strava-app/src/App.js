@@ -4,18 +4,22 @@ import Cookies from "js-cookie";
 import _ from "lodash";
 
 import { Routes, Route } from "react-router-dom";
+// context
+import { useAuth } from "./context/AuthContext";
 // components
 import ReturnProfile from "./components/UserProfile";
 import Sidebar from "./components/Sidebar";
 import Landing from "./Landing";
 import Cycling from "./Cycling";
 import Running from "./Running";
+import ProtectedRoute from "./protectRoute";
+
 import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [link, setLink] = useState();
 
-  const [auth, setAuth] = useState(false);
+  // const [auth, setAuth] = useState(false);
   const [athlete, setAthlete] = useState({});
   const [latest, setLatest] = useState(null);
   const [userActivities, setUseractivities] = useState([]);
@@ -26,7 +30,11 @@ function App() {
   const [boxHill, setBoxHill] = useState({});
   const [message, setMessage] = useState("");
 
-  const baseURL = "http://localhost:3000";
+  const baseURL = "http://localhost:3000/api";
+   
+
+  // impprt react context auth - this gives access to global auth state
+  const { auth, setAuth } = useAuth();
 
   /*
    * Useffect function runs when page loads,
@@ -39,17 +47,15 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-
-   
   }, []);
 
   // useffect function - gets the main athlete data from /user/athlete/
   // and the datasets from /data/datasets. Then sets the state variables
-  // with response. 
+  // with response.
   useEffect(() => {
-    const token = Cookies.get("token")
-    if(token){
-      setAuth(true)
+    const token = Cookies.get("token");
+    if (token) {
+      setAuth(true);
     }
     const config = {
       headers: { Authorization: `Bearer ${token}` },
@@ -65,7 +71,7 @@ function App() {
         }
         // set the state values with response
         setAthlete(userData.data.profile);
-      
+
         const userRecordsInfo = _.omit(userData.data.user, "activities");
         setUserRecords(userRecordsInfo);
         setUseractivities(userData.data.user.activities);
@@ -82,20 +88,20 @@ function App() {
         console.log(error);
       }
     };
-    // only call the get data function 
+    // only call the get data function
     // if there is a token - avoid axios error
     if (token) {
       getData();
     }
-  }, []);  
+  }, [setAuth]);
   /**
-   * useffect data 
+   * useffect data
    * get the latest data from strava api
    * call the api with the date of last activity in app state.
-   * get all events recorded after that. 
+   * get all events recorded after that.
    */
   useEffect(() => {
-    const token = Cookies.get("token")
+    const token = Cookies.get("token");
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
@@ -107,15 +113,11 @@ function App() {
           baseURL + `/user/activities/${date}`,
           config
         );
-        console.log(
-          activities,
-          "THIS IS THE ACTIVITIES THAT ARE FROM THE DATE"
-        );
+        // if an error object from api call return
         if (activities.data.error) {
           console.log(activities.data.error);
           return;
         } else {
-          
           if (activities.data.length) {
             setUseractivities((oldArray) => [...oldArray, ...activities.data]);
           }
@@ -124,7 +126,6 @@ function App() {
         console.log(error);
       }
     };
-    console.log("the latest use effect ran", latest);
     if (auth && latest && userActivities.length) {
       getLatestData();
     }
@@ -139,21 +140,20 @@ function App() {
    * @returns void
    */
   const importData = async () => {
-    const token = Cookies.get("token")
+    const token = Cookies.get("token");
     setMessage(
       "Please come back and login after an hour - the data will be uploaded by then"
     );
     const config = {
       headers: { Authorization: `Bearer ${token}`, id: athlete.id },
     };
-    axios(baseURL + `/user/activities/all-activities`, config);
+    axios(baseURL + `/user/activities/activities-list`, config);
 
     setTimeout(() => {
       logout();
     }, 20000);
   };
 
- 
   /**
    * function logout
    * remove token
@@ -161,38 +161,36 @@ function App() {
    * @return void
    */
   const logout = () => {
-    setAuth(false)
+    setAuth(false);
     setMessage("");
     Cookies.remove("token");
-   
+
     axios.get(baseURL + "/auth/logout");
     window.location.href = "/";
     if (window.location.pathname === "/") {
       window.location.reload();
     }
-    
   };
 
   // define weight variable for cycling page
-  let weight
-  if(athlete.weight === undefined){
+  let weight;
+  if (athlete.weight === undefined) {
     weight = 75;
-  }else{
-    weight = athlete.weight
+  } else {
+    weight = athlete.weight;
   }
 
   return (
     <div className="font-body flex ">
       <Sidebar
         logout={logout}
-        auth={auth}
+    
         importData={importData}
         userActivities={userActivities}
-       
       />
       <div className="h-auto w-full ">
         {!!athlete.id && (
-          <header className="top-0 ... pt-4 px-32 flex justify-end ">
+          <header className="pt-4 px-16 w-full flex justify-end ">
             {faSquareArrowUpRight && <ReturnProfile athlete={athlete} />}
           </header>
         )}
@@ -215,21 +213,24 @@ function App() {
                 />
               }
             ></Route>
-            <Route
-              path="/cycling"
-              element={
-                <Cycling
-                  userRecords={userRecords}
-                  ftp={userRecords.cyclingFTP}
-                  alpedataset={alpe}
-                  boxdataset={boxHill}
-                  weight={weight}
-                />
-              }
-            ></Route>
 
+            <Route exact path="/cycling" element={<ProtectedRoute />}>
+              <Route
+                path="/cycling"
+                element={
+                  <Cycling
+                    userRecords={userRecords}
+                    ftp={userRecords.cyclingFTP}
+                    alpedataset={alpe}
+                    boxdataset={boxHill}
+                    weight={weight}
+                  />
+                }
+              ></Route>
+            </Route>
+            <Route exact path="/running" element={<ProtectedRoute />}>
             <Route
-              path="/running"
+              exact path="/running"
               element={
                 <Running
                   userRecords={userRecords}
@@ -238,6 +239,7 @@ function App() {
                 />
               }
             ></Route>
+            </Route>
           </Routes>
         </div>
       </div>

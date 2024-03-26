@@ -77,6 +77,7 @@ export default function RunchartRegression({ userRecords, event, regdata }) {
               display: true,
               text: "5k time",
               font: {
+                family: "lato",
                 weight: "bold",
                 size: 22,
               },
@@ -87,7 +88,8 @@ export default function RunchartRegression({ userRecords, event, regdata }) {
               stepSize: 120,
               color: "#1a1a1a",
               font: {
-                fontSize: "8pts",
+                size: "14pts",
+                family: "lato"
               },
               callback: (val) => {
                 if (val < 60) {
@@ -110,9 +112,10 @@ export default function RunchartRegression({ userRecords, event, regdata }) {
             },
             ticks: {
               stepSize: 120,
+              family: "lato",
               color: "#1a1a1a",
               font: {
-                fontSize: "8pts",
+                size: "14pts",
               },
               callback: (val) => {
                 if (val < 60) {
@@ -161,7 +164,7 @@ export default function RunchartRegression({ userRecords, event, regdata }) {
         Five km time: {fivekFormat["minutes"]}:{fivekFormat["seconds"]}
       </h3>
 
-      <h3 className="border-b-2 border-green-800 inline-block">
+      <h3 className="border-b-2 border-rose-500 inline-block">
         {event} prediction: {predFormat["hours"]}:{predFormat["minutes"]}
       </h3>
     </div>

@@ -110,7 +110,11 @@ export default function Linechart(props) {
           stepSize: 500,
           color: "#1a1a1a",
           font: {
-            weight: "bold",
+          
+            family: "lato",
+         
+            size: "16pts",
+            
           },
         },
         title: {
@@ -125,21 +129,32 @@ export default function Linechart(props) {
       y: {
         title: {
           display: true,
-          text: "Best pace",
+          text: "Best pace mins per km",
           font: {
             weight: "bold",
+            family: "lato",
             size: 22,
           },
         },
         ticks: {
-          stepSize: 60,
+          stepSize: 30,
+          font:{
+          family: "lato",
+         
+            size: "16pts",
+          
+          },
+            
           callback: (val) => {
             if (val < 60) {
               return val;
             }
             const remainder = val % 60;
             const minutes = (val - remainder) / 60;
-            return `${minutes} min`;
+            if(remainder !== 0){
+              return `${minutes}:${remainder}`;
+            }
+            return `${minutes}:00`;
           },
         },
 
@@ -155,11 +170,11 @@ export default function Linechart(props) {
       {
         label: "Best pace",
         data: finaldata,
-        borderColor: "#00897b",
-        backgroundColor: "#84cec7",
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
       },
     ],
   };
 
-  return <Line options={options} data={data} />;
+  return <Line options={options} data={data}  className="bg-white p-8"/>;
 }

@@ -3,10 +3,11 @@ const {quickSort} = require("./arraysorting")
 
 /**
  * 
+ * @function  calcMaxHr
  * this function calculates maxhr - it check if 
  * activities are rides or runs and then removes obvious
  * outliers. This is an issue as hr monitors can occasionaly
- * massively misreport numbers.
+ * misreport numbers.
  * Thus i've filtered for the activities that were obvsiouly done
  * at a higher intensity and then removed data 3 standard devivations from the 
  * mean (if such data exists.)

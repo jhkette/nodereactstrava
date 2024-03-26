@@ -5,18 +5,17 @@ import { intervalToDuration } from "date-fns";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import {sortedIndex, quickSort}   from "../helpers/helpers"
+import { sortedIndex, quickSort } from "../helpers/helpers";
 
 export default function RidechartRegression({
   regdata,
-  userRecords:{cyclingpbs},
+  userRecords: { cyclingpbs },
   weight,
   ftp,
 }) {
- 
   let predWkg;
   if (cyclingpbs && weight && regdata[0] !== undefined) {
-    console.log(cyclingpbs)
+    console.log(cyclingpbs);
     if (regdata[0]["name"] === "Alpe du zwift") {
       if (cyclingpbs["1800"] / weight >= 6.5) {
         predWkg = cyclingpbs["1800"];
@@ -50,8 +49,15 @@ export default function RidechartRegression({
   // https://www.youtube.com/watch?v=1b1wC1ksJoI
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
-
-  let regData, finalScatter, expRegression, prediction, formattedPred, sorted, indexPred;
+  
+  // initialising variable so they are avialble outside if statement
+  let regData,
+    finalScatter,
+    expRegression,
+    prediction,
+    formattedPred,
+    sorted,
+    indexPred;
 
   if (regdata.length) {
     regData = regdata[0]["dataset"].map(({ x, y }) => {
@@ -64,25 +70,23 @@ export default function RidechartRegression({
 
     expRegression = regression.logarithmic(regData);
 
-    
     prediction = Math.round(expRegression.predict([predWkg])[1]);
-  
 
     sorted = expRegression.points.sort(function (a, b) {
       return a[0] - b[0];
     });
-    
-    const hilltimes = quickSort(finalScatter.map((item) => item.y))
-    console.log(hilltimes, prediction, sortedIndex(hilltimes, prediction))
-    indexPred = Math.round((sortedIndex(hilltimes, prediction)/ hilltimes.length) * 100)
+
+    const hilltimes = quickSort(finalScatter.map((item) => item.y));
+  
+    indexPred = Math.round(
+      (sortedIndex(hilltimes, prediction) / hilltimes.length) * 100
+    );
 
     function humanDuration(time) {
-      return intervalToDuration({start: 0, end: time * 1000});
-     };
+      return intervalToDuration({ start: 0, end: time * 1000 });
+    }
 
-     formattedPred = humanDuration(prediction)
-
-
+    formattedPred = humanDuration(prediction);
   }
 
   useEffect(() => {
@@ -140,7 +144,7 @@ export default function RidechartRegression({
                   xValue: predWkg,
                   yValue: prediction,
                   borderColor: "#000",
-                  backgroundColor: "#00000088"
+                  backgroundColor: "#00000088",
                 },
               },
             },
@@ -149,9 +153,10 @@ export default function RidechartRegression({
             x: {
               title: {
                 display: true,
-                text: "Watts per kg of bodyweight",
+                text: "Watts/kg of bodyweight",
                 font: {
                   weight: "bold",
+                  family: "lato",
                   size: 18,
                 },
               },
@@ -163,24 +168,19 @@ export default function RidechartRegression({
                 color: "#1a1a1a",
                 font: {
                   fontSize: "8pts",
+                  family: "lato"
                 },
-                // callback: (val) => {
-                //   if (val < 60) {
-                //     return `${val} seconds`;
-                //   }
-                //   const remainder = val % 60;
-                //   const minutes = (val - remainder) / 60;
-                //   return `${minutes}:00`;
-                // },
+      
               },
             },
             y: {
               title: {
                 display: true,
-                text: `${regdata[0]["name"]} time`,
+                text: `${regdata[0]["name"]} time (hh:mm)`,
                 font: {
                   weight: "bold",
-                  size: 22,
+          family: "lato",
+                  size: 18,
                 },
               },
 
@@ -190,11 +190,9 @@ export default function RidechartRegression({
                 color: "#1a1a1a",
                 font: {
                   fontSize: "8pts",
+                  family: "lato"
                 },
-                // ticks: {
-                //   beginAtZero: true,
-                // },
-
+              
                 callback: (val) => {
                   if (val < 60) {
                     return `${val} seconds`;
@@ -207,11 +205,12 @@ export default function RidechartRegression({
                   let hoursRemainder = minutes % 60;
 
                   const hours = (minutes - hoursRemainder) / 60;
-                  if (hoursRemainder < 10) {
+                  if ((hours > 0) &&(hoursRemainder < 10)) {
                     hoursRemainder = `0${hoursRemainder}`;
                   }
-                  if (hours == 0) {
-                    return hoursRemainder;
+                  if ((hours === 0) &&(hoursRemainder < 10)) {
+                    
+                    return `0:0${hoursRemainder}`;
                   }
                   return `${hours}:${hoursRemainder}`;
                 },
@@ -229,10 +228,21 @@ export default function RidechartRegression({
   }, [finalScatter, regdata, sorted, prediction, predWkg]);
 
   return regdata.length ? (
-    <div className="w-10/12 bg-white m-auto p-8">
+    <div className="w-10/12 bg-white p-4">
       <canvas ref={chartRef} className="w-full" />
-      <p> {formattedPred["hours"] ?  formattedPred["hours"] : "" } {formattedPred["minutes"]}:{formattedPred["seconds"]}</p>
-      <p>This predicted time would put you in the top {indexPred}% of the sampled riders</p>
+      {/* some conditional formatting to check time is readable */}
+      <h3 className="border-b-2 mb-2 border-green-800 inline-block">
+        {" "} Your predicted time is: 
+        {formattedPred["hours"] ? formattedPred["hours"] : ""}{" "}
+        {formattedPred["minutes"]}:
+        {formattedPred["seconds"] < 10
+          ? "0" + formattedPred["seconds"]
+          : formattedPred["seconds"]}
+      </h3>
+      <p>
+        This predicted time would put you in the top {indexPred}% of the sampled
+        riders
+      </p>
     </div>
   ) : (
     <p>
