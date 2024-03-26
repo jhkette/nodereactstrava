@@ -21,12 +21,31 @@ export default function DoughnutChart({hr}) {
   const nums = [hr.zone1, hr.zone2, hr.zone3, hr.zone4, hr.zone5];
   const options = {
     plugins: {
+
+      legend: {
+        labels: {
+            // This more specific font property overrides the global property
+            font: {
+                size: 16,
+                color: "rgb(26, 26, 26)"
+            }
+        }
+    },
       datalabels: {
         formatter: function (value, context) {
           return `${nums[context.dataIndex][0]} - ${
             nums[context.dataIndex][1]
           } bpm`;
         },
+        labels: {
+          title: {
+            font: {
+              family: "lato",
+              size: 16,
+              fontColor: "rgb(26, 26, 26)"
+            }
+          },
+        }
       },
       tooltip: {
         callbacks: {
