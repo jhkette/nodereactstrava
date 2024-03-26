@@ -47,7 +47,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [baseURL]);
 
   // useffect function - gets the main athlete data from /user/athlete/
   // and the datasets from /data/datasets. Then sets the state variables

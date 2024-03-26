@@ -56,22 +56,34 @@ export default function Cycling({ userRecords, alpedataset,  boxdataset, ftp, we
        
       <section className="flex flex-wrap w-full  px-12 justify-between" >
       <div className="w-5/12">
-      <h2 className="text-2xl font-bold pb-8">Training - heart rate</h2>
+      <h2 className="text-2xl font-bold pb-8">Training - Heart Rate</h2>
       <DoughnutChart hr={userRecords.bikeHrZones} />
       </div>
       <div className="w-6/12  py-6">
-    
+      <h3 className="pb-4">Heart rate zones</h3>
+              <p className="text-lg">
+                These are your heart rate zone -derived from your max heart-rate - calculated by the app.
+                Zone 2 heart rate should corrospond to easy runs, zone 3 tempo. zone 4 threshold and finally, zone5 your vo2 max zone.
+              </p>
 
       </div>
       </section>
-      <section className="flex flex-wrap w-full py-8 px-12 justify-between">
+      <section className="flex flex-wrap w-full py-12 px-12 justify-between">
       <div className="w-6/12 ">
-      <h2 className="text-2xl font-bold pb-8">Training - heart rate</h2>
-      <Ftp ftp={ftp} />
-      </div>
-      <div className="w-6/12  ">
+      <h2 className="text-2xl font-bold pb-8">Training - Power</h2>
+      <h3 className="pb-4">Power zones</h3>
+              <p className="text-lg">
+                These are your power zones zone -derived from your FTP - calculated by the app.
+                Each zone corrosponds to a different level of intensity.
+              </p>
 
       </div>
+      <div className="w-6/12  ">
+      <Ftp ftp={ftp} />
+</div>
+      
+      
+     
       </section>
      
     </section>
