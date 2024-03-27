@@ -23,44 +23,44 @@ export default function Sidebar({
 
   const { auth } = useAuth();
   return (
-    <div className="h-auto w-4/12 bg-sky-900 min-h-screen drop-shadow-2xl">
+    <div className="h-auto w-4/12 bg-slate-200 min-h-screen drop-shadow-2xl">
       <nav className="flex flex-col p-12">
-        <div className="flex flex-row justify-start items-center py-2 border-b  border-white/20">
+        <div className="flex flex-row justify-start items-center py-2 border-b  border-black/20">
           <div className="w-10">
-            <FontAwesomeIcon icon={faCalendar} inverse size="xl" />
+            <FontAwesomeIcon icon={faCalendar}  size="xl" />
           </div>
-          <p className="p-2 text-lg text-white">
+          <p className="p-2 text-lg">
             <Link to="/"> Home </Link>
           </p>
         </div>
         {!!userActivities.length && (
-          <div className="flex flex-row justify-start items-center py-2 border-b  border-white/20">
+          <div className="flex flex-row justify-start items-center py-2 border-b  border-black/20">
             <div className="w-10">
-              <FontAwesomeIcon icon={faBiking} inverse size="xl" />
+              <FontAwesomeIcon icon={faBiking}  size="xl" />
             </div>
-            <p className="p-2 text-lg text-white">
+            <p className="p-2 text-lg">
               <Link to="/cycling"> Cycling</Link>
             </p>
           </div>
         )}
         {!!userActivities.length && (
-          <div className="flex flex-row justify-start items-center py-2 border-b  border-white/20">
+          <div className="flex flex-row justify-start items-center py-2 border-b  border-black/20">
             <div className="w-10">
-              <FontAwesomeIcon icon={faRunning} inverse size="xl" />
+              <FontAwesomeIcon icon={faRunning}  size="xl" />
             </div>
-            <p className=" p-2 text-lg text-white">
+            <p className=" p-2 text-lg">
               <Link to="/running"> Running</Link>
             </p>
           </div>
         )}
        
         {auth && (
-          <div className="flex flex-row justify-start items-center py-2 border-b  border-white/20">
+          <div className="flex flex-row justify-start items-center py-2 border-b  border-black/20">
             <div className="w-10">
-              <FontAwesomeIcon icon={faDoorOpen} inverse size="xl" />
+              <FontAwesomeIcon icon={faDoorOpen}  size="xl" />
             </div>
             <p
-              className=" p-2 text-lg text-white cursor-pointer"
+              className=" p-2 text-lg cursor-pointer"
               onClick={logout}
             >
               Logout
