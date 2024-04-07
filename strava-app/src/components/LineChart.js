@@ -57,10 +57,10 @@ const floatingLabels = {
     // var yAxis = chart.scales.y;
     ctx.save();
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#0c4a6e';
-    ctx.font = 'bold .95rem Lato'
-    var finalx = x.getPixelForValue('840')
-    var finaly = y.getPixelForValue(props.power.cyclingFTP - 50)
+    ctx.fillStyle = '#0d5f96';
+    ctx.font = '.95rem Lato'
+    var finalx = x.getPixelForValue('940')
+    var finaly = y.getPixelForValue(props.power.cyclingFTP - 60)
     ctx.fillText(`Functional threshold power estimate ${props.power.cyclingFTP }`, finalx, finaly )
   }
 }
@@ -80,8 +80,8 @@ const options = {
           type: "line",
           yMin: props.power.cyclingFTP,
           yMax: props.power.cyclingFTP,
-          borderColor: "#0c4a6e",
-          borderWidth: 2,
+          borderColor: "#0d5f96",
+          borderWidth: 3,
           borderDash: [4],
         },
       },
@@ -122,8 +122,8 @@ const options = {
         stepSize: 60,
         color: "#1a1a1a",
         font: {
-        
-          familt: "lato"
+          size: 14,
+          family: "lato"
         },
        
         callback: (val) => {
@@ -139,7 +139,7 @@ const options = {
         display: true,
         text: "Time",
         font: {
-          weight: "bold",
+       
           family: "lato",
           size: 22,
         },
@@ -150,14 +150,15 @@ const options = {
         display: true,
         text: "Power in watts",
         font: {
-          weight: "bold",
+         
           family: "lato",
           size: 22,
         },
       },
       ticks: {
         font:{
-          family: "lato"
+          family: "lato",
+          size: 14,
         }
       },
   
@@ -180,5 +181,5 @@ const options = {
 };
 
 
-  return <Line options={options} plugins={[floatingLabels]} data={data}  className="bg-white p-6"/>;
+  return <Line options={options} plugins={[floatingLabels]} data={data}  className="bg-white p-4"/>;
 }

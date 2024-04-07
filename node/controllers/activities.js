@@ -181,7 +181,7 @@ exports.importActivities = async (req, res) => {
   let page_num = 1;
   const data_list = [];
   try {
-    while (page_num <= 10) {
+    while (page_num <= 8) {
       if (page_num % 2 === 0) {
         // await sleep();
       }
@@ -189,7 +189,7 @@ exports.importActivities = async (req, res) => {
         `https://www.strava.com/api/v3/athlete/activities`,
         {
           headers: { Authorization: token },
-          params: { per_page: 30, page: page_num },
+          params: { per_page: 25, page: page_num },
         }
       );
 
@@ -242,7 +242,7 @@ exports.importActivities = async (req, res) => {
   activities need to be arranged
    * first to last **/
   data_set.reverse();
-  const allUserData = await UserActivities.findOneAndUpdate(
+  await UserActivities.findOneAndUpdate(
     { athlete_id: userId },
     {
       $push: { activities: { $each: data_set } },

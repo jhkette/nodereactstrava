@@ -31,3 +31,11 @@ const findContiniousAverage = (arr = [], num = 1) => {
 };
 console.log(findContiniousAverage(arr, num));
 console.log(findContiniousAverage(arr));
+
+
+
+
+GfG (2023d) Smallest subarray with sum greater than or equal to K. https://www.geeksforgeeks.org/smallest-subarray-from-a-given-array-with-sum-greater-than-or-equal-to-k/.
+
+
+GfG (2024) Sliding window technique. https://www.geeksforgeeks.org/window-sliding-technique/.

@@ -1,6 +1,6 @@
 /**
  * This reduces the times array to the distance between the times
- * 
+ * @function checkForTimeError 
  * @param times []
  * @returns int 
  */

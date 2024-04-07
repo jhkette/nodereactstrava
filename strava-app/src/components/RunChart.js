@@ -5,6 +5,8 @@ import "chartjs-adapter-date-fns";
 import "chartjs-adapter-moment";
 import { intervalToDuration } from "date-fns";
 
+
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -47,6 +49,8 @@ export default function Linechart(props) {
 
   const finaldata = [];
 
+  let floatingLabels;
+
   if (props.data.runningpbs) {
     const timeObj = props.data.runningpbs;
 
@@ -59,16 +63,49 @@ export default function Linechart(props) {
       const perkm = 1 / speed;
       finaldata.push(perkm);
     }
-  }
-  const labels = Object.keys(props.data.runningpbs);
 
+    floatingLabels = {
+      id: 'floatingLabels',
+      afterDatasetDraw(chart, args, options){
+        const {ctx, chartArea: {top, bottom}, scales:{x,y}} = chart
+    
+        // var xAxis = chart.scales.x;
+        // var yAxis = chart.scales.y;
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#0d5f96';
+        ctx.font = '1rem Lato'
+        var finalx = x.getPixelForValue('5000')
+        var finaly = y.getPixelForValue((props.data.runningpbs["10000"]/10) + 5)
+        ctx.fillText(`Critical pace estimate `, finalx, finaly )
+      }
+    }
+  }
+
+
+  const labels = Object.keys(props.data.runningpbs);
+  console.log(props.data.runningpbs)
   const options = {
+  
+   
     responsive: true,
     plugins: {
       plugins: {
         title: {
           display: true,
           text: "Running pace chart",
+        },
+      },
+      annotation: {
+        annotations: {
+          line1: {
+            type: "line",
+            yMin: props.data.runningpbs["10000"] / 10,
+            yMax: props.data.runningpbs["10000"]  / 10,
+            borderColor: "#0d5f96",
+            borderWidth: 3,
+            borderDash: [4],
+          },
         },
       },
       tooltip: {
@@ -109,11 +146,12 @@ export default function Linechart(props) {
         ticks: {
           stepSize: 500,
           color: "#1a1a1a",
+
           font: {
           
             family: "lato",
          
-            size: "16pts",
+            size: 14,
             
           },
         },
@@ -121,27 +159,29 @@ export default function Linechart(props) {
           display: true,
           text: "Distance in metres",
           font: {
-            weight: "bold",
-            size: 22,
+            family: "lato",
+            size: 20,
           },
         },
       },
       y: {
+        reverse: true,
         title: {
           display: true,
           text: "Best pace mins per km",
           font: {
-            weight: "bold",
+           
             family: "lato",
-            size: 22,
+            size: 20,
           },
         },
         ticks: {
           stepSize: 30,
+          
           font:{
           family: "lato",
          
-            size: "16pts",
+            size: 14,
           
           },
             
@@ -176,5 +216,5 @@ export default function Linechart(props) {
     ],
   };
 
-  return <Line options={options} data={data}  className="bg-white p-8"/>;
+  return <Line options={options} data={data} plugins={[floatingLabels]}  className="bg-white p-4 drop-shadow-md"/>;
 }

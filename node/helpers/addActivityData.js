@@ -2,7 +2,7 @@
 const axios = require("axios");
 const _ = require("lodash");
 // helper functions
-const { findAverage } = require("./arraysorting");
+const { findAverages } = require("./arraysorting");
 const { runDistance, getShortestSubarray } = require("./runSorting");
 const { durations, distances } = require("./values");
 const { sleep } = require("../helpers/sleep");
@@ -13,13 +13,14 @@ const { checkForTimeError } = require("./timeErrorCheck");
  * strava api for extra infomration on those activities if neccesarray.
  * this is only needed for watts stream data or run data - both of which return a long array
  * of number representing speed/watts/ distance travelled per second on the activity.
+ * @function activityLoop
  * @param data_set[], @param token String
- *  * @returns data_set
+ *  @returns data_set []
  */
 async function activityLoop(data_set, token) {
   let calls = 10; // we have already made 10 calls
   for (element of data_set) {
-    if (calls === 98) {
+    if (calls === 90) {
       await sleep();
       calls = 0;
     }
@@ -39,7 +40,7 @@ async function activityLoop(data_set, token) {
           if (shouldBeFive === 5) {
             if (element["watt_stream"]["watts"]) {
               for (duration of durations) {
-                const averages = findAverage(
+                const averages = findAverages(
                   duration,
                   element["watt_stream"]["watts"]["data"]
                 );
@@ -64,20 +65,16 @@ async function activityLoop(data_set, token) {
         calls++;
         element["run_stream"] = run.data;
         const runpbs = {};
+        // console.log(element["watt_stream"])
         // checking there is time data for each second - some recording devices don't
         // if they don't i just return an empty pb array object as it interferes with accurate data. 
-        const times = element["watt_stream"]["time"]["data"]
+        const times = element["run_stream"]["time"]["data"]
         const shouldBeFive = checkForTimeError(times)
       
-        console.log(element["run_stream"]["time"])
         if(shouldBeFive === 5){
         const runInMetres = runDistance(
           element["run_stream"]["distance"]["data"]
         );
-
-        console.log(element["run_stream"], "this is run stream");
-
-        console.log(runInMetres);
 
         for (distance of distances) {
           const quickest = getShortestSubarray(runInMetres, distance);

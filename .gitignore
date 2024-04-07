@@ -1,8 +1,12 @@
 logs
 *.log
 npm-debug.log*
+node/.env
+node/.DS_Store
 
 .env
+./psudocode.txt
+psudocode.txt
 # Runtime data
 pids
 *.pid

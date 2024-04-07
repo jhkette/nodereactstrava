@@ -26,9 +26,11 @@ export function quickSort(items) {
 
 
 /**
- * Binary search - used to find index of prediction 
- * 
- * */
+ * @function sortedIndex
+ * @param array []
+ * @param value int
+ * @returns low int
+ */
 
 export function sortedIndex(array, value) {
     let low = 0;

@@ -1,24 +1,31 @@
 const _ = require("lodash");
+/**
+ * https://sunjetliu.medium.com/algorithm-practice-find-averages-of-subarrays-db9108c0d55e
+ * Function findAverages
+ * @param n - Integer length for average
+ * @param array  -[] array of watts values
+ * @returns averages []
+ */
 
-// https://sunjetliu.medium.com/algorithm-practice-find-averages-of-subarrays-db9108c0d55e
-function findAverage(K, arr) {
-  // if K is bigger than array length return null
-  if (K > arr.length) {
+function findAverages(n, array) {
+  // if n is bigger than arrayay length return null
+  if (n > array.length) {
     return null;
   }
-  // store result in array
-  const result = [];
-  let windowSum = 0.0,
+  // store average in arrayay
+  const averages = [];
+  let windowSum = 0.0, // initalise windowSum and windowStart values
     windowStart = 0;
-  for (let windowEnd = 0; windowEnd < arr.length; windowEnd++) {
-    windowSum += arr[windowEnd]; // add the next element
-    if (windowEnd >= K - 1) { // if windowend = k-1 ie the length we are looking for
-      result.push(windowSum / K);
-      windowSum -= arr[windowStart];
-      windowStart += 1;
+  for (let windowEnd = 0; windowEnd < array.length; windowEnd++) { // start loop
+    windowSum += array[windowEnd]; // add the next element
+    if (windowEnd >= n - 1) { // if windowend = n-1 ie the length we are looking for
+      averages.push(windowSum / n); // add the average to results
+      // we subtract from the sum the first item in the window - as the window is moving one up
+      windowSum -= array[windowStart]; 
+      windowStart += 1; // move window start up one
     }
   }
-  return result;
+  return averages; // return the array of averages
 }
 
 /**
@@ -54,4 +61,4 @@ function quickSort(items) {
   return [...quickSort(leftItems), pivot, ...quickSort(rightItems)];
 }
 
-module.exports = { findAverage, quickSort };
+module.exports = { findAverages, quickSort };

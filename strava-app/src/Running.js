@@ -6,16 +6,16 @@ import RunchartRegression from "./components/RunChartRegression";
 // running page with charts
 export default function Running({ userRecords, mardataset, halfdataset }) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen px-24">
       {userRecords.runningpbs && (
         <>
-          <div className="w-full py-18 px-12">
+          <div className="w-full">
             <h1 className="pb-8">Pace chart: minutes per km </h1>
             <RunChart data={userRecords} />
           </div>
 
-          <section className="flex flex-wrap w-full py-18 px-12 justify-between">
-            <div className="w-4/12 py-12 pr-8">
+          <section className="flex flex-wrap w-full py-16 px-18 justify-between">
+            <div className="w-4/12 py-4 pr-8">
               <h2 className="pb-4">Half Marathon prediction</h2>
               <p className="text-lg">
                 This is a dataset from a running club, with 5k times on the x
@@ -25,7 +25,7 @@ export default function Running({ userRecords, mardataset, halfdataset }) {
                 of your half marathon time{" "}
               </p>
             </div>
-            <div className="w-8/12 py-12">
+            <div className="w-8/12 py-4">
               <RunchartRegression
                 userRecords={userRecords}
                 event={"Half Marathon"}

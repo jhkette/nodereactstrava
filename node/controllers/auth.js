@@ -1,5 +1,5 @@
 const client = require("../middleware/client");
-const axios = require("axios");
+
 
 exports.login = (req, res) => {
   return res.redirect(client.getAuthorizationUri());
@@ -28,32 +28,3 @@ exports.logout = (req, res) => {
   return res.send({ msg: "logged out succesfully" });
 };
 
-// exports.deauthorize = async (req, res) => {
-//   const errors = {};
-//   const token = req.headers.authorization;
-//   if (!token) {
-//     errors["error"] = "Permission not granted";
-//     return res.json(errors);
-//   }
-//   try {
-
-//     console.log(token)
-
-//     const response = await axios.get(`https://www.strava.com/api/v3/athlete`, {
-//       headers: { Authorization: token },
-//     });
-
-//     console.log(response.data)
-//     await axios.post(`https://www.strava.com/api/v3/deauthorize`, {
-//       headers: { Authorization: token },
-//     });
-
-    
-
-   
-
-//     return res.send({ msg: "successfuly deauthorised" });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
