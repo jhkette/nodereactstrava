@@ -5,7 +5,7 @@ import { intervalToDuration } from "date-fns";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { sortedIndex, quickSort } from "../helpers/helpers";
+
 
 export default function RidechartRegression({
   regdata,
@@ -17,14 +17,14 @@ export default function RidechartRegression({
   let pbLevel;
   if (cyclingpbs && weight && regdata[0] !== undefined) {
     console.log(cyclingpbs);
-    if (regdata[0]["name"] === "Alpe du zwift") {
-      if (cyclingpbs["1800"] / weight >= 6.5) {
+    if (regdata[0]["name"] === "Bealach-na-ba") {
+      if (cyclingpbs["1200"] / weight >= 6.5) {
+        predWkg = cyclingpbs["1200"];
+        pbLevel = "your best 20 minute power"
+      } else if (cyclingpbs["1800"] / weight >= 5) {
         predWkg = cyclingpbs["1800"];
         pbLevel = "your best 30 minute power"
-      } else if (cyclingpbs["2700"] / weight >= 5) {
-        predWkg = cyclingpbs["2700"];
-        pbLevel = "your best 45 minute power"
-      } else if (ftp / weight >= 3) {
+      } else if (ftp / weight >= 4) {
         predWkg = ftp / weight;
         pbLevel = "your FTP level power"
       } else {
@@ -33,23 +33,22 @@ export default function RidechartRegression({
       }
     }
 
-    if (regdata[0]["name"] === "Box Hill") {
-      console.log(cyclingpbs["1800"]);
-      if (cyclingpbs["180"] / weight >= 7) {
-        predWkg = cyclingpbs["180"] / weight;
-        pbLevel = "your best 3 minute power"
-      } else if (cyclingpbs["300"] / weight >= 6) {
-        predWkg = cyclingpbs["300"] / weight;
-        pbLevel = "your best 5 minute power"
-      } else if (cyclingpbs["390"] / weight >= 5) {
-        predWkg = cyclingpbs["390"] / weight;
-        pbLevel = "your best 6:30 minute power"
-      } else if (cyclingpbs["480"] / weight >= 4) {
+    if (regdata[0]["name"] === "Hardknott pass") {
+      if (cyclingpbs["480"] / weight >= 6.8) {
         predWkg = cyclingpbs["480"] / weight;
         pbLevel = "your best 8 minute power"
-      } else {
+      } else if (cyclingpbs["600"] / weight >= 5.9) {
         predWkg = cyclingpbs["600"] / weight;
         pbLevel = "your best 10 minute power"
+      } else if (cyclingpbs["720"] / weight >= 4.4) {
+        predWkg = cyclingpbs["720"] / weight;
+        pbLevel = "your best 12 minute power"
+      } else if (cyclingpbs["900"] / weight >= 3.2) {
+        predWkg = cyclingpbs["900"] / weight;
+        pbLevel = "your best 15 minute power"
+      } else {
+        predWkg = cyclingpbs["1200"] / weight;
+        pbLevel = "your best 20 minute power"
       }
     }
   }
@@ -66,8 +65,8 @@ export default function RidechartRegression({
     expRegression,
     prediction,
     formattedPred,
-    sorted,
-    indexPred;
+    sorted
+
 
   if (regdata.length) {
     regData = regdata[0]["dataset"].map(({ x, y }) => {
@@ -78,19 +77,13 @@ export default function RidechartRegression({
       return { x: item[0], y: item[1] };
     });
 
-    expRegression = regression.logarithmic(regData);
+    expRegression = regression.polynomial(regData);
 
     prediction = Math.round(expRegression.predict([predWkg])[1]);
 
     sorted = expRegression.points.sort(function (a, b) {
       return a[0] - b[0];
     });
-
-    const hilltimes = quickSort(finalScatter.map((item) => item.y));
-  
-    indexPred = Math.round(
-      (sortedIndex(hilltimes, prediction) / hilltimes.length) * 100
-    );
 
     function humanDuration(time) {
       return intervalToDuration({ start: 0, end: time * 1000 });
@@ -117,7 +110,7 @@ export default function RidechartRegression({
           datasets: [
             {
               type: "line",
-              label: "Logarithmic regression",
+              label: "Polynomial regression",
               data: sorted.map((data) => data[1]),
               borderColor: "#00897b",
               backgroundColor: "#00897b88",
@@ -239,10 +232,10 @@ export default function RidechartRegression({
   }, [finalScatter, regdata, sorted, prediction, predWkg]);
 
   return regdata.length ? (
-    <div className="w-11/12 bg-white p-4">
+    <div className="w-11/12 bg-white p-8">
       <canvas ref={chartRef} className="w-full" />
       {/* some conditional formatting to check time is readable */}
-      <p className="border-b-2 my-4 border-green-800 inline-block text-l font-bold">
+      <p className="border-b-2 my-4 border-green-800 text-lg inline-block text-l font-bold">
         {" "} Your predicted time is: 
         {formattedPred["hours"] ? formattedPred["hours"] : ""}{" "}
         {formattedPred["minutes"]}:
@@ -250,10 +243,7 @@ export default function RidechartRegression({
           ? "0" + formattedPred["seconds"]
           : formattedPred["seconds"]}
       </p>
-      <p>This calcuation is based on you holding {pbLevel} for the duration of the ride. This predicted 
-       time would put you in the top {indexPred}% of the sampled
-        riders</p>
-      
+      <p className="text-lg">This calcuation is based on you holding {pbLevel} for the duration of the ride. </p>
     </div>
   ) : (
     <p>

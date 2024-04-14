@@ -18,6 +18,9 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 // Anaerobic Capacity
 // (>120% FTP)
 
+/**
+ * Creates table on cycling page
+ */
 
 export default function DoughnutChart({ ftp }) {
   if (!ftp) {

@@ -216,5 +216,5 @@ export default function Linechart(props) {
     ],
   };
 
-  return <Line options={options} data={data} plugins={[floatingLabels]}  className="bg-white p-4 drop-shadow-md"/>;
+  return <Line options={options} data={data} plugins={[floatingLabels]}  className="bg-white p-4"/>;
 }

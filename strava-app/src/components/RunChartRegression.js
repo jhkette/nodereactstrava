@@ -21,6 +21,8 @@ export default function RunchartRegression({ userRecords, event, regdata }) {
     prediction = my_regression.predict(userRecords.runningpbs["5000"])[1];
   }
 
+
+
   useEffect(() => {
     if (!userRecords.runningpbs["5000"] || !regdata) {
       return;
@@ -145,28 +147,63 @@ export default function RunchartRegression({ userRecords, event, regdata }) {
       }
     };
   }, [userRecords, prediction, regData, my_regression.points, event, regdata]);
-
+  
+  /**
+   * Returns human readable time as an object {hh:mm} or {mm:ss}
+  */
   function humanDuration(time) {
     return intervalToDuration({ start: 0, end: time * 1000 });
   }
 
-  let fivekFormat, predFormat;
+  
+  function getPace(time, event){
+  
+    let pace, pace2, finalpace1, finalpace2 // initialise variable
+
+    if (event === "Half Marathon"){
+       pace  = time/ 13.1
+       pace2 = time/ 20.09
+      
+      finalpace1 = humanDuration(pace)
+      finalpace2 =  humanDuration(pace2)
+      return [finalpace1, finalpace2]
+
+    }else{
+      pace = time/26.2
+      pace2 = time/42.2
+      finalpace1 = humanDuration(pace)
+      finalpace2 =  humanDuration(pace2)
+      return [finalpace1, finalpace2]
+    } 
+  }
+
+  let fivekFormat, predFormat, recPace
   if (prediction && userRecords.runningpbs) {
     predFormat = humanDuration(prediction);
     fivekFormat = humanDuration(userRecords.runningpbs["5000"]);
+    recPace = getPace(prediction, event)
+    console.log(recPace)
   }
 
   return userRecords.runningpbs ? (
     <div className="bg-white m-auto p-8">
       <canvas ref={chartRef} style={{ width: "300px", height: "200px" }} />
+      <article className="flex flex-col">
+        <h3 className="border-b-2 border-rose-500 text-xl mb-4">Predictions and pacing</h3>
+      <p className="text-lg ">
+       Your five km personal best: {fivekFormat["minutes"]}:{fivekFormat["seconds"]}
+      </p>
 
-      <h3>
-        Five km time: {fivekFormat["minutes"]}:{fivekFormat["seconds"]}
-      </h3>
-
-      <h3 className="border-b-2 border-rose-500 inline-block">
+      <p className=" text-lg ">
         {event} prediction: {predFormat["hours"]}:{predFormat["minutes"]}
-      </h3>
+      </p>
+      <p className="  text-lg">
+        Recommended pace:   {recPace[0]["minutes"]}: {recPace[0]["seconds"]< 10 ? '0' +recPace[0]['seconds'] : recPace[0]["seconds"] } per/mile
+       or {recPace[1]["minutes"]}: {recPace[1]["seconds"]< 10 ? '0' +recPace[1]['seconds'] : recPace[1]["seconds"] } per/km
+      </p>
+    
+    
+      </article>
     </div>
   ) : (
     <p>

@@ -2,16 +2,17 @@ beforeEach(() => {
   cy.visit("http://localhost:8080/");
 });
 
-// nb these tests run against a local site - password is for local site obviously
-// login test - goes to login - types in credentials
-it("should be able to login", () => {
-  // viewport size
-  cy.viewport(1200, 1000);
-  // got to commonlinks and login
+// nb these tests run against a local site -
+// it logins in to strava via the site 
+// then navigates around sites
+// checking for elements
+it("should be able to login", () => { 
+
+  // go to login button
   cy.get(".p-8.opacity-70.rounded-md.bg-blue-100 > button")
     .contains("Authorise")
     .click();
-  cy.origin("https://www.strava.com", () => {
+  cy.origin("https://www.strava.com", () => { // login in to strava
     cy.get("#email").click().type("jkette01@student.bbk.ac.uk", { delay: 100 });
     cy.get("#password").click().type("test1234", { delay: 100 });
     cy.get("#login-button").click();
@@ -24,7 +25,12 @@ it("should be able to login", () => {
 
   cy.get("nav").contains("Cycling").click();
   cy.url().should("include", "/cycling");
+  cy.get('.min-h-screen')
+  .find('canvas')
+ 
 
   cy.get("nav").contains("Running").click();
+  cy.get('.min-h-screen')
+  .find('canvas')
   cy.url().should("include", "/running");
 });

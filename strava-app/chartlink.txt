@@ -15,3 +15,61 @@
 
   // REACT CONTEXT GUIDE
 https://www.google.com/search?q=auth+context+guide&rlz=1C5CHFA_enGB990GB990&oq=auth+context+guide&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDQ2MDBqMGo5qAIAsAIA&sourceid=chrome&ie=UTF-8#fpstate=ive&vld=cid:3ef07206,vid:2-6K-TMA-nw,st:0
+
+
+ 1.  Component Hierarchy
+ 2. Oauth flow
+ 3. NoSQL database design
+ 4. Sliding window technique 
+ 5. Cycling personal bests function
+ 6. Running personal bests function
+ 7.  Histogram of all heart rate data for 100 activities
+ 8. Histogram of heart rate excluding easy activities
+ 9. QQ plot of heart rate data
+ 10. Calculate max heartrate function
+ 11. Standard deviation and mean function 
+ 12. Heart Rate Zones
+ 13. TSS and heart rate 
+ 14. CheckPbs function
+ 15. Activity diagram showing how the server responds to a user logging in
+ 16. Training Peaks Calendar
+ 17. Pace Chart
+ 18.  Power curve chart
+ 19. Garmin watch race predictor
+ 20. 5k time and Half Marathon time linear regression
+ 21. 5k time and marathon time linear regression
+ 22. Half marathon linear regression and prediction
+ 23. Marathon linear regression and prediction
+ 24. Strava Segment (top section)
+ 25. Strava Segment Bealach-na-ba leaderboard
+ 26. Bealach-na-ba in Scotland (Source Flickr Creative Commons)
+ 27. Hardknott Pass (Source Wikipedia – Hardknott Pass)
+ 28. Hardknott pass linear regression model
+ 29. Baelach-na-ba linear regression model
+ 30. Hardknott pass logarithmic regression model
+ 31. Bealach-na-ba logarithmic regression model
+ 32. Linear regression model of Hardknott pass with logged value of x
+ 33. Linear regression model of Bealach-na-ba with logged value of x
+ 34. Polynomial regression for Hardknott pass
+ 35. Polynomial regression for Bealach-na-ba
+ 36. Polynomial regression of Bealach-na-ba and predicted time
+ 37. Polynomial regression of Hardknott pass and predicted time
+ 38. If/else statement to select appropriate w/kg value
+ 39. Heart rate zones
+ 40. Power zones
+ 41. Testing the findAverages function and the getShortestSubarray for running averages and cycling power averages.
+
+ 42. Postman request to get an athlete’s data
+ 43. Postman request to get athlete’s dataset
+ 44. React State with data from API saved as state via react dev tools 
+ 45. Console log for new event fetched from Strava
+ 46. User interface update
+ 47. 10 minute power record of 382 watts
+ 48. 10 minute power record from a particular ride 
+ 49. 10 km pace record 5:00 per/km
+ 50. Strava extension 10 km pace 5:01 per/km
+ 51 Cypress end-to-end test
+ 52. Cypress test running
+ 53. Power meter on bicycle
+ 54. Bicycle computer
+ 57. Power records graph

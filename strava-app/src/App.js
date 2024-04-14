@@ -27,8 +27,10 @@ function App() {
   const [marathon, setMarathon] = useState({});
   const [half, setHalf] = useState({});
   const [alpe, setAlpe] = useState({});
-  const [boxHill, setBoxHill] = useState({});
+
   const [message, setMessage] = useState("");
+  const [hardknott, setHardknott] = useState({})
+  const [scotland, setScotland] = useState({})
 
   const baseURL = "http://localhost:3000/api";
    
@@ -83,7 +85,9 @@ function App() {
         setMarathon(dataSet.data.marathon);
         setHalf(dataSet.data.half);
         setAlpe(dataSet.data.alpe);
-        setBoxHill(dataSet.data.boxHill);
+   
+        setHardknott(dataSet.data.hardknott)
+        setScotland(dataSet.data.scotland)
       } catch (error) {
         console.log(error);
       }
@@ -190,7 +194,7 @@ function App() {
       />
       <div className="h-auto w-full ">
         {!!athlete.id && (
-          <header className="pt-4 px-16 w-full flex justify-end ">
+          <header className="pt-4 px-24 w-full flex justify-end ">
             {faSquareArrowUpRight && <ReturnProfile athlete={athlete} />}
           </header>
         )}
@@ -222,8 +226,9 @@ function App() {
                     userRecords={userRecords}
                     ftp={userRecords.cyclingFTP}
                     alpedataset={alpe}
-                    boxdataset={boxHill}
+                    scotland={scotland}
                     weight={weight}
+                   hardknott={hardknott}
                   />
                 }
               ></Route>

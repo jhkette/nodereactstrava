@@ -14,9 +14,9 @@ export default function Running({ userRecords, mardataset, halfdataset }) {
             <RunChart data={userRecords} />
           </div>
 
-          <section className="flex flex-wrap w-full py-16 px-18 justify-between">
+          <section className="flex flex-wrap w-full pt-16  justify-between">
             <div className="w-4/12 py-4 pr-8">
-              <h2 className="pb-4">Half Marathon prediction</h2>
+              <h2 className="pb-4">Half Marathon prediction / pacing</h2>
               <p className="text-lg">
                 This is a dataset from a running club, with 5k times on the x
                 axis and half marathon on the y axis. The green line is a linear
@@ -33,7 +33,7 @@ export default function Running({ userRecords, mardataset, halfdataset }) {
               />
             </div>
           </section>
-          <section className="flex flex-wrap w-full py-18 px-12 justify-between">
+          <section className="flex flex-wrap w-full pt-16 justify-between">
             <div className="w-8/12 py-12">
               <RunchartRegression
                 userRecords={userRecords}
@@ -42,7 +42,7 @@ export default function Running({ userRecords, mardataset, halfdataset }) {
               />
             </div>
             <div className="w-4/12 py-12 pl-8">
-              <h2 className="pb-4">Marathon prediction</h2>
+              <h2 className="pb-4">Marathon prediction / pacing</h2>
               <p className="text-lg">
                 This is another dataset from a running club, with 5k times on
                 the x axis and marathon on the y axis. The green line is another
@@ -52,11 +52,11 @@ export default function Running({ userRecords, mardataset, halfdataset }) {
               </p>
             </div>
           </section>
-          <section className="flex flex-wrap w-full py-18 px-12 justify-between">
-            <div className="w-6/12 py-18 px-12">
+          <section className="flex flex-wrap w-full py-16 justify-between">
+            <div className="w-5/12 py-18">
               <DoughnutChart hr={userRecords.runHrZones} />
             </div>
-            <div className="w-6/12 py-12 pl-8">
+            <div className="w-7/12 py-12 pl-8">
               <h2 className="pb-4">Heart rate zones</h2>
               <p className="text-lg">
                 These are your heart rate zone -derived from your max heart-rate - calculated by the app.
