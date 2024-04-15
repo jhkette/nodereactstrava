@@ -32,3 +32,15 @@ serve -s build -l 8080
 install pm2 
 
 // https://devhints.io/pm2 pm2 cheatsheet
+
+
+
+PM2 now supports npm start:
+
+pm2 start npm -- start
+To assign a name to the PM2 process, use the --name option:
+// for node
+pm2 start npm --name "app name" -- start
+
+// for react
+pm2 serve build 8080 --spa 
