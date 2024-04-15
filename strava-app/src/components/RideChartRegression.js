@@ -6,7 +6,15 @@ import { intervalToDuration } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
-
+/**
+ * 
+ * This returns a regression chart rides
+ * the actual graph is constrcuted in the useffect function
+ * I have had to create several that the relevant data is present
+ * then I construct the chart - it gets passed as a parameter to the canvas 
+ * The first part of the function decide which power profile to use. 
+ * 
+ */
 export default function RidechartRegression({
   regdata,
   userRecords: { cyclingpbs },

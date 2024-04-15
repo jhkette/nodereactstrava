@@ -5,8 +5,18 @@ import { intervalToDuration } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
+
+
+/**
+ * 
+ * This returns a regression chart runs
+ * the actual graph is constrcuted in the useffect function
+ * I have had to create several that the relevant data is present
+ * then I construct the chart - it gets passed as a parameter to the canvas 
+ * 
+ */
 export default function RunchartRegression({ userRecords, event, regdata }) {
-  // https://www.youtube.com/watch?v=1b1wC1ksJoI
+  
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 

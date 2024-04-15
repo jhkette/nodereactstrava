@@ -11,7 +11,9 @@ import {
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-//<FontAwesomeIcon icon="fa-solid fa-spinner" spinPulse />
+/**
+ * This returns a doughnut chart of heart rate monitors
+ */
 export default function DoughnutChart({hr}) {
   if (!hr) {
     return <FontAwesomeIcon icon={faSpinner} spinPulse />

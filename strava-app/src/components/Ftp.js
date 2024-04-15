@@ -19,7 +19,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 // (>120% FTP)
 
 /**
- * Creates table on cycling page
+ * Creates zones table on cycling page
  */
 
 export default function DoughnutChart({ ftp }) {
@@ -27,7 +27,7 @@ export default function DoughnutChart({ ftp }) {
     return <FontAwesomeIcon icon={faSpinner} spinPulse />;
   }
 
-  // const hr = props.hr;
+ 
    // ftp zones are calculated on the front end - ftp is a dynamic value -  so it minimises the amount of updates we need to
    // make to the database. It is also a very simple calculation
   const ftpzones = {

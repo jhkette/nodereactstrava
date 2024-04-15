@@ -16,7 +16,7 @@ export default function Cycling({
     <section className="min-h-screen w-full py-4 px-24">
       <h1 className="text-2xl font-bold py-8 ">Power Chart</h1>
       <LineChart power={userRecords} />
-      <p className="py-8 px-6 text-lg">
+      <p className="pt-8  text-lg">
         This is a power chart showing your power records for various time
         periods. Ideally, you wouldd want a high peak over the very short
         periods. For the longer periods it should only very gradually level out.
@@ -25,12 +25,13 @@ export default function Cycling({
         periods.{" "}
       </p>
 
-      <section className="w-full px-6">
-        <h2 className="text-2xl font-bold pb-8">Predicting your climbing</h2>
-        <p className="pb-8 text-lg">
+      <section className="w-full pt-16">
+        <h2 className="text-2xl font-bold mb-8">Predicting your climbing</h2>
+        <p className="text-lg pb-8">
           Climbing is an important part of cycling. Here, I have used two
           datasets from Strava segments. These are short routes that Strava
-          times to create a leaderboard.{" "}
+          times to create a leaderboard. Bealach-na-ba represents your climbing ability over longer periods, whereas 
+          Hardknott pass is a shorter climb - that should take between 10 and 20 minutes.
         </p>
         <RidechartRegression
           regdata={scotland}
@@ -38,18 +39,19 @@ export default function Cycling({
           weight={weight}
           ftp={ftp}
         />
-        <div className="flex flex-wrap w-full py-18  justify-between">
-          <div className=" w-5/12 my-8 h-80 bg-[url('./images/balach.jpg')]  bg-no-repeat bg-cover bg-center border-8 border-slate-300"></div>
-          <div className="w-7/12 py-8">
+        <div className="flex flex-wrap w-full py-8  justify-between">
+          <div className=" w-5/12 h-80 bg-[url('./images/balach.jpg')]  bg-no-repeat bg-cover bg-center border-8 border-slate-300"></div>
+          <div className="w-7/12 pl-8">
             <h3>Bealach na Bà</h3>
             <p className="text-lg">
-              Bealach na Bà is one of Britain's highest roads
+              Located in the Scottish highlands, Bealach na Bà is one of Britain's highest roads. This climb takes 25-45 minutes and will represent a threshold effort for most
+              people.  
             </p>
           </div>
         </div>
       </section>
 
-      <section className="w-full px-6">
+      <section className="w-full pt-16">
         <RidechartRegression
           regdata={hardknott}
           userRecords={userRecords}
@@ -57,19 +59,18 @@ export default function Cycling({
           ftp={ftp}
         />
         <div className="flex flex-wrap w-full py-8  justify-between">
-          <div className="w-7/12">
+          <div className="w-7/12 pr-8">
             <h3>Hardknott pass</h3>
             <p className="text-lg">
               {" "}
-              Box Hill is a shorter effort and should reflect your ability to
-              climb at around your vo2 max.{" "}
+             Hardknott pass is a climb in the Lake District with gradients of up to 30%. It is a shorter climb that should represent something between a 10 and 20 minute max effort. 
             </p>
           </div>
-          <div className=" w-5/12 h-80 bg-[url('./images/hardknott2.jpg')]  bg-no-repeat bg-cover bg-center border-8 border-slate-300"></div>
+          <div className=" w-5/12 h-80  bg-[url('./images/hardknott2.jpg')]  bg-no-repeat bg-cover bg-center border-8 border-slate-300"></div>
         </div>
       </section>
 
-      <section className="flex flex-wrap w-full justify-between">
+      <section className="flex flex-wrap w-full justify-between pt-16">
         <div className="w-5/12">
           <h2 className="text-2xl font-bold pb-8">Training - Heart Rate</h2>
           <DoughnutChart hr={userRecords.bikeHrZones} />
@@ -84,8 +85,8 @@ export default function Cycling({
           </p>
         </div>
       </section>
-      <section className="flex flex-wrap w-full py-12 px-12 justify-between">
-        <div className="w-6/12 ">
+      <section className="flex flex-wrap w-full py-16  justify-between pt-16">
+        <div className="w-6/12 pr-8">
           <h2 className="text-2xl font-bold pb-8">Training - Power</h2>
           <h3 className="pb-4">Power zones</h3>
           <p className="text-lg">

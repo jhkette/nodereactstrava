@@ -10,24 +10,20 @@ import { Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
+// sidebar component - contains links to other pages depending on auth status
 export default function Sidebar({
   logout,
   userActivities,
   message,
   importData,
-
-}) 
-
-
-{
-
+}) {
   const { auth } = useAuth();
   return (
     <div className="h-auto w-4/12 bg-slate-200 min-h-screen drop-shadow-2xl">
       <nav className="flex flex-col p-12 ml-8">
         <div className="flex flex-row justify-start items-center py-2  border-black/20">
           <div className="w-10">
-            <FontAwesomeIcon icon={faCalendar}  size="xl" />
+            <FontAwesomeIcon icon={faCalendar} size="xl" />
           </div>
           <p className="p-2 text-lg">
             <Link to="/"> Home </Link>
@@ -36,7 +32,7 @@ export default function Sidebar({
         {!!userActivities.length && (
           <div className="flex flex-row justify-start items-center py-2  border-black/20">
             <div className="w-10">
-              <FontAwesomeIcon icon={faBiking}  size="xl" />
+              <FontAwesomeIcon icon={faBiking} size="xl" />
             </div>
             <p className="p-2 text-lg">
               <Link to="/cycling"> Cycling</Link>
@@ -46,30 +42,25 @@ export default function Sidebar({
         {!!userActivities.length && (
           <div className="flex flex-row justify-start items-center py-2  border-black/20">
             <div className="w-10">
-              <FontAwesomeIcon icon={faRunning}  size="xl" />
+              <FontAwesomeIcon icon={faRunning} size="xl" />
             </div>
             <p className=" p-2 text-lg">
               <Link to="/running"> Running</Link>
             </p>
           </div>
         )}
-       
+
         {auth && (
           <div className="flex flex-row justify-start items-center py-2  border-black/20">
             <div className="w-10">
-              <FontAwesomeIcon icon={faDoorOpen}  size="xl" />
+              <FontAwesomeIcon icon={faDoorOpen} size="xl" />
             </div>
-            <p
-              className=" p-2 text-lg cursor-pointer"
-              onClick={logout}
-            >
+            <p className=" p-2 text-lg cursor-pointer" onClick={logout}>
               Logout
             </p>
           </div>
-
-          
         )}
-         
+
         {auth && !userActivities.length ? (
           <div className="flex flex-row justify-start items-center py-16">
             <div className="w-10"></div>
